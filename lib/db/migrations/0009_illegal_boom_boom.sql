@@ -1,0 +1,1 @@
+ALTER TABLE "CMSContent" ADD COLUMN "embedding" text;
