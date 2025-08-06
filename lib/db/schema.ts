@@ -9,6 +9,8 @@ import {
   primaryKey,
   foreignKey,
   boolean,
+  decimal,
+  integer,
 } from 'drizzle-orm/pg-core';
 // For now, use text column for vector storage until we can properly set up pgvector
 // import { vector } from 'pgvector';
@@ -17,6 +19,13 @@ export const user = pgTable('User', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   email: varchar('email', { length: 64 }).notNull(),
   password: varchar('password', { length: 64 }),
+  name: varchar('name', { length: 100 }),
+  role: varchar('role', { enum: ['user', 'admin'] }).notNull().default('user'),
+  emailVerified: boolean('emailVerified').notNull().default(false),
+  resetToken: varchar('resetToken', { length: 255 }),
+  resetTokenExpiry: timestamp('resetTokenExpiry'),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 });
 
 export type User = InferSelectModel<typeof user>;
@@ -191,4 +200,91 @@ export const cmsContent = pgTable('CMSContent', {
 });
 
 export type CMSContent = InferSelectModel<typeof cmsContent>;
+
+// New tables for document management and payment system
+export const documentLibrary = pgTable('DocumentLibrary', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  title: text('title').notNull(),
+  description: text('description'),
+  fileName: varchar('fileName', { length: 255 }).notNull(),
+  filePath: text('filePath').notNull(),
+  fileSize: integer('fileSize').notNull(),
+  fileType: varchar('fileType', { length: 50 }).notNull(),
+  price: decimal('price', { precision: 10, scale: 2 }).default('0.00'),
+  isFree: boolean('isFree').notNull().default(true),
+  category: varchar('category', { length: 100 }),
+  tags: json('tags').$type<string[]>().default([]),
+  downloadCount: integer('downloadCount').notNull().default(0),
+  isActive: boolean('isActive').notNull().default(true),
+  analyzedContent: json('analyzedContent').$type<{
+    text?: string;
+    keywords?: string[];
+    summary?: string;
+    metadata?: Record<string, any>;
+  }>(),
+  uploadedBy: uuid('uploadedBy')
+    .notNull()
+    .references(() => user.id),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+});
+
+export type DocumentLibrary = InferSelectModel<typeof documentLibrary>;
+
+export const payment = pgTable('Payment', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+  documentId: uuid('documentId')
+    .references(() => documentLibrary.id),
+  paymentType: varchar('paymentType', { enum: ['document', 'package'] }).notNull(),
+  stripePaymentIntentId: varchar('stripePaymentIntentId', { length: 255 }),
+  amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+  currency: varchar('currency', { length: 3 }).notNull().default('USD'),
+  status: varchar('status', { 
+    enum: ['pending', 'completed', 'failed', 'refunded'] 
+  }).notNull().default('pending'),
+  paymentDate: timestamp('paymentDate'),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+});
+
+export type Payment = InferSelectModel<typeof payment>;
+
+export const userDocumentAccess = pgTable('UserDocumentAccess', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+  documentId: uuid('documentId')
+    .notNull()
+    .references(() => documentLibrary.id),
+  paymentId: uuid('paymentId')
+    .references(() => payment.id),
+  accessType: varchar('accessType', { enum: ['purchased', 'free', 'admin'] }).notNull(),
+  downloadCount: integer('downloadCount').notNull().default(0),
+  lastAccessedAt: timestamp('lastAccessedAt'),
+  grantedAt: timestamp('grantedAt').notNull().defaultNow(),
+});
+
+export type UserDocumentAccess = InferSelectModel<typeof userDocumentAccess>;
+
+export const downloadHistory = pgTable('DownloadHistory', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+  documentId: uuid('documentId')
+    .notNull()
+    .references(() => documentLibrary.id),
+  accessId: uuid('accessId')
+    .notNull()
+    .references(() => userDocumentAccess.id),
+  ipAddress: varchar('ipAddress', { length: 45 }),
+  userAgent: text('userAgent'),
+  downloadedAt: timestamp('downloadedAt').notNull().defaultNow(),
+});
+
+export type DownloadHistory = InferSelectModel<typeof downloadHistory>;
 

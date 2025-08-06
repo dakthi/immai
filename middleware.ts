@@ -13,17 +13,7 @@ export async function middleware(request: NextRequest) {
     return new Response('pong', { status: 200 });
   }
 
-  // Temporary bypass for localhost in production mode
-  if (request.nextUrl.hostname === 'localhost') {
-    return NextResponse.next();
-  }
-
   if (pathname.startsWith('/api/auth')) {
-    return NextResponse.next();
-  }
-
-  // Allow admin routes without authentication
-  if (pathname.startsWith('/admin')) {
     return NextResponse.next();
   }
 
@@ -39,6 +29,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(
       new URL(`/api/auth/guest?redirectUrl=${redirectUrl}`, request.url),
     );
+  }
+
+  // Check admin routes - require authentication and admin role
+  if (pathname.startsWith('/admin')) {
+    console.log('Admin route accessed:', pathname);
+    console.log('Token role:', token?.role);
+    console.log('User email:', token?.email);
+    
+    if (!token.role || token.role !== 'admin') {
+      console.log('Redirecting to login - insufficient permissions');
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+    
+    console.log('Admin access granted');
+    return NextResponse.next();
   }
 
   const isGuest = guestRegex.test(token?.email ?? '');
@@ -57,6 +62,7 @@ export const config = {
     '/api/:path*',
     '/login',
     '/register',
+    '/admin/:path*',
 
     /*
      * Match all request paths except for the ones starting with:

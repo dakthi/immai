@@ -53,11 +53,15 @@ export async function getUser(email: string): Promise<Array<User>> {
   }
 }
 
-export async function createUser(email: string, password: string) {
+export async function createUser(email: string, password: string, name?: string) {
   const hashedPassword = generateHashedPassword(password);
 
   try {
-    return await db.insert(user).values({ email, password: hashedPassword });
+    return await db.insert(user).values({ 
+      email, 
+      password: hashedPassword,
+      name: name || null 
+    });
   } catch (error) {
     throw new ChatSDKError('bad_request:database', 'Failed to create user');
   }
@@ -533,6 +537,139 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to get stream ids by chat id',
+    );
+  }
+}
+
+// Password reset functions
+export async function setPasswordResetToken(email: string, token: string, expiry: Date) {
+  try {
+    return await db
+      .update(user)
+      .set({ 
+        resetToken: token, 
+        resetTokenExpiry: expiry,
+        updatedAt: new Date()
+      })
+      .where(eq(user.email, email));
+  } catch (error) {
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to set password reset token',
+    );
+  }
+}
+
+export async function getUserByResetToken(token: string) {
+  try {
+    return await db
+      .select()
+      .from(user)
+      .where(and(
+        eq(user.resetToken, token),
+        gt(user.resetTokenExpiry, new Date())
+      ));
+  } catch (error) {
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to get user by reset token',
+    );
+  }
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+  const hashedPassword = generateHashedPassword(newPassword);
+  
+  try {
+    return await db
+      .update(user)
+      .set({ 
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(user.resetToken, token),
+        gt(user.resetTokenExpiry, new Date())
+      ))
+      .returning({ id: user.id, email: user.email });
+  } catch (error) {
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to reset password',
+    );
+  }
+}
+
+export async function changePassword(userId: string, newPassword: string) {
+  const hashedPassword = generateHashedPassword(newPassword);
+  
+  try {
+    return await db
+      .update(user)
+      .set({ 
+        password: hashedPassword,
+        updatedAt: new Date()
+      })
+      .where(eq(user.id, userId));
+  } catch (error) {
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to change password',
+    );
+  }
+}
+
+// Admin seeding function
+export async function createDefaultAdmin() {
+  try {
+    // Check if admin already exists
+    const [existingAdmin] = await db
+      .select()
+      .from(user)
+      .where(eq(user.role, 'admin'))
+      .limit(1);
+
+    if (existingAdmin) {
+      console.log('Admin user already exists:', existingAdmin.email);
+      return existingAdmin;
+    }
+
+    // Create default admin
+    const adminEmail = 'admin@immai.me';
+    const adminPassword = 'admin123'; // Change this in production
+    const hashedPassword = generateHashedPassword(adminPassword);
+
+    const [newAdmin] = await db
+      .insert(user)
+      .values({
+        email: adminEmail,
+        password: hashedPassword,
+        name: 'System Administrator',
+        role: 'admin',
+        emailVerified: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      });
+
+    console.log('Default admin created successfully:', {
+      email: adminEmail,
+      password: adminPassword,
+      ...newAdmin
+    });
+
+    return newAdmin;
+  } catch (error) {
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to create default admin',
     );
   }
 }
