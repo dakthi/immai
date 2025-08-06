@@ -660,7 +660,6 @@ export async function createDefaultAdmin() {
       });
 
     console.log('Default admin created successfully:', {
-      email: adminEmail,
       password: adminPassword,
       ...newAdmin
     });
