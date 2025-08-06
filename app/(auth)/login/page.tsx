@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useActionState, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useActionState, useEffect, useState, Suspense } from 'react';
 import { toast } from '@/components/toast';
 
 import { AuthForm } from '@/components/auth-form';
@@ -11,8 +11,9 @@ import { SubmitButton } from '@/components/submit-button';
 import { login, type LoginActionState } from '../actions';
 import { useSession } from 'next-auth/react';
 
-export default function Page() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [email, setEmail] = useState('');
   const [isSuccessful, setIsSuccessful] = useState(false);
@@ -40,7 +41,8 @@ export default function Page() {
     } else if (state.status === 'success') {
       setIsSuccessful(true);
       updateSession();
-      router.refresh();
+      const callbackUrl = searchParams.get('callbackUrl') || searchParams.get('redirectUrl') || '/';
+      router.push(decodeURIComponent(callbackUrl));
     }
   }, [state.status]);
 
@@ -83,5 +85,17 @@ export default function Page() {
         </AuthForm>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-dvh w-screen items-center justify-center bg-background">
+        <div className="text-sm text-gray-500">Loading...</div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }

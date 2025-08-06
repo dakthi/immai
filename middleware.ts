@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { guestRegex, isDevelopmentEnvironment } from './lib/constants';
+import { guestRegex } from './lib/constants';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -13,15 +13,30 @@ export async function middleware(request: NextRequest) {
     return new Response('pong', { status: 200 });
   }
 
-  if (pathname.startsWith('/api/auth')) {
+  // Allow auth-related routes without token check
+  if (pathname.startsWith('/api/auth') || 
+      pathname.startsWith('/login') || 
+      pathname.startsWith('/register') ||
+      pathname.startsWith('/forgot-password') ||
+      pathname.startsWith('/reset-password')) {
     return NextResponse.next();
   }
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-    secureCookie: !isDevelopmentEnvironment,
-  });
+  let token;
+  try {
+    token = await getToken({
+      req: request,
+      secret: process.env.AUTH_SECRET,
+      secureCookie: process.env.NODE_ENV === 'production' && process.env.VERCEL === '1',
+    });
+  } catch (error) {
+    console.error('Token retrieval error:', error);
+    // If token retrieval fails, redirect to guest auth
+    const redirectUrl = encodeURIComponent(request.url);
+    return NextResponse.redirect(
+      new URL(`/api/auth/guest?redirectUrl=${redirectUrl}`, request.url),
+    );
+  }
 
   if (!token) {
     const redirectUrl = encodeURIComponent(request.url);
@@ -39,7 +54,8 @@ export async function middleware(request: NextRequest) {
     
     if (!token.role || token.role !== 'admin') {
       console.log('Redirecting to login - insufficient permissions');
-      return NextResponse.redirect(new URL('/login', request.url));
+      const callbackUrl = encodeURIComponent(request.url);
+      return NextResponse.redirect(new URL(`/login?callbackUrl=${callbackUrl}`, request.url));
     }
     
     console.log('Admin access granted');
