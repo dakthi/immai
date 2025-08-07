@@ -37,7 +37,7 @@ jobs:
         run: pnpm exec tsc --noEmit
 
       - name: Build application
-        run: pnpm build
+        run: pnpm build:ci
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
