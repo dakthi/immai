@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-import { Settings } from 'lucide-react';
+import { Settings, Store, Library } from 'lucide-react';
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
@@ -57,22 +57,54 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                 </TooltipTrigger>
                 <TooltipContent align="end">New Chat</TooltipContent>
               </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    type="button"
+                    className="p-2 h-fit"
+                    asChild
+                  >
+                    <Link href="/marketplace">
+                      <Store className="w-4 h-4" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent align="end">Marketplace</TooltipContent>
+              </Tooltip>
               {user && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      type="button"
-                      className="p-2 h-fit"
-                      asChild
-                    >
-                      <Link href="/admin">
-                        <Settings className="w-4 h-4" />
-                      </Link>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent align="end">Admin</TooltipContent>
-                </Tooltip>
+                <>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        type="button"
+                        className="p-2 h-fit"
+                        asChild
+                      >
+                        <Link href="/marketplace/library">
+                          <Library className="w-4 h-4" />
+                        </Link>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent align="end">My Library</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        type="button"
+                        className="p-2 h-fit"
+                        asChild
+                      >
+                        <Link href="/admin">
+                          <Settings className="w-4 h-4" />
+                        </Link>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent align="end">Admin</TooltipContent>
+                  </Tooltip>
+                </>
               )}
             </div>
           </div>

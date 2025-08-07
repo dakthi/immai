@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe, updateUserToPaid, updateUserSubscriptionStatus } from '@/lib/stripe';
 import { db } from '@/lib/db';
-import { user } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { user, payment, userDocumentAccess, documentLibrary } from '@/lib/db/schema';
+import { eq, and } from 'drizzle-orm';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -23,6 +23,51 @@ export async function POST(req: NextRequest) {
       case 'payment_intent.succeeded': {
         const paymentIntent = event.data.object;
         console.log('Payment succeeded:', paymentIntent.id);
+
+        // Handle document purchases
+        const [paymentRecord] = await db
+          .select()
+          .from(payment)
+          .where(eq(payment.stripePaymentIntentId, paymentIntent.id))
+          .limit(1);
+
+        if (paymentRecord && paymentRecord.documentId) {
+          // Update payment status
+          await db
+            .update(payment)
+            .set({
+              status: 'completed',
+              paymentDate: new Date(),
+            })
+            .where(eq(payment.id, paymentRecord.id));
+
+          // Grant document access
+          const existingAccess = await db
+            .select()
+            .from(userDocumentAccess)
+            .where(and(
+              eq(userDocumentAccess.userId, paymentRecord.userId),
+              eq(userDocumentAccess.documentId, paymentRecord.documentId)
+            ))
+            .limit(1);
+
+          if (existingAccess.length === 0) {
+            await db.insert(userDocumentAccess).values({
+              userId: paymentRecord.userId,
+              documentId: paymentRecord.documentId,
+              paymentId: paymentRecord.id,
+              accessType: 'purchased',
+              downloadCount: 0,
+            });
+
+            // Increment download count for the document
+            await db.execute(
+              `UPDATE "DocumentLibrary" SET "downloadCount" = "downloadCount" + 1 WHERE id = '${paymentRecord.documentId}'`
+            );
+
+            console.log(`Granted access to document ${paymentRecord.documentId} for user ${paymentRecord.userId}`);
+          }
+        }
         break;
       }
 
