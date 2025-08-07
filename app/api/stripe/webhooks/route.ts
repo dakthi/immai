@@ -4,12 +4,14 @@ import { db } from '@/lib/db';
 import { user, payment, userDocumentAccess, } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-if (!webhookSecret) {
-  console.error('STRIPE_WEBHOOK_SECRET environment variable is not set');
-  throw new Error('STRIPE_WEBHOOK_SECRET is not configured');
+function getWebhookSecret(): string {
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error('STRIPE_WEBHOOK_SECRET environment variable is not set');
+    throw new Error('STRIPE_WEBHOOK_SECRET is not configured');
+  }
+  return webhookSecret;
 }
-const validWebhookSecret: string = webhookSecret;
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     let event: any;
     try {
-      event = stripe.webhooks.constructEvent(body, signature, validWebhookSecret);
+      event = stripe.webhooks.constructEvent(body, signature, getWebhookSecret());
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });

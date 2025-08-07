@@ -6,7 +6,6 @@ export const isTestEnvironment = Boolean(
     process.env.CI_PLAYWRIGHT,
 );
 
-export const guestRegex = /^guest-\d+$/;
 
 let _dummyPassword: string | undefined;
 

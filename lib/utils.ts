@@ -11,6 +11,8 @@ import { ChatSDKError, type ErrorCode } from './errors';
 import type { ChatMessage, ChatTools, CustomUIDataTypes } from './types';
 import { formatISO } from 'date-fns';
 
+export const guestRegex = /^guest-\d+$/;
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
