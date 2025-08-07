@@ -20,12 +20,17 @@ export const user = pgTable('User', {
   email: varchar('email', { length: 64 }).notNull(),
   password: varchar('password', { length: 64 }),
   name: varchar('name', { length: 100 }),
-  role: varchar('role', { enum: ['user', 'admin'] }).notNull().default('user'),
+  role: varchar('role', { enum: ['user', 'paiduser', 'admin'] }).notNull().default('user'),
   emailVerified: boolean('emailVerified').notNull().default(false),
   resetToken: varchar('resetToken', { length: 255 }),
   resetTokenExpiry: timestamp('resetTokenExpiry'),
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+  stripeCustomerId: varchar('stripeCustomerId', { length: 255 }),
+  subscriptionStatus: varchar('subscriptionStatus', { 
+    enum: ['active', 'inactive', 'trialing', 'past_due', 'canceled', 'unpaid'] 
+  }),
+  subscriptionId: varchar('subscriptionId', { length: 255 }),
 });
 
 export type User = InferSelectModel<typeof user>;

@@ -7,13 +7,16 @@ import { DUMMY_PASSWORD } from '@/lib/constants';
 import type { DefaultJWT } from 'next-auth/jwt';
 
 export type UserType = 'guest' | 'regular';
+export type UserRole = 'user' | 'paiduser' | 'admin';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string;
       type: UserType;
-      role?: string;
+      role: UserRole;
+      stripeCustomerId?: string;
+      subscriptionStatus?: string;
     } & DefaultSession['user'];
   }
 
@@ -21,7 +24,9 @@ declare module 'next-auth' {
     id?: string;
     email?: string | null;
     type: UserType;
-    role?: string;
+    role: UserRole;
+    stripeCustomerId?: string;
+    subscriptionStatus?: string;
   }
 }
 
@@ -29,7 +34,9 @@ declare module 'next-auth/jwt' {
   interface JWT extends DefaultJWT {
     id: string;
     type: UserType;
-    role?: string;
+    role: UserRole;
+    stripeCustomerId?: string;
+    subscriptionStatus?: string;
   }
 }
 
@@ -62,7 +69,13 @@ export const {
 
         if (!passwordsMatch) return null;
 
-        return { ...user, type: 'regular', role: user.role };
+        return { 
+          ...user, 
+          type: 'regular', 
+          role: user.role as UserRole,
+          stripeCustomerId: user.stripeCustomerId || undefined,
+          subscriptionStatus: user.subscriptionStatus || undefined
+        };
       },
     }),
     Credentials({
@@ -70,7 +83,7 @@ export const {
       credentials: {},
       async authorize() {
         const [guestUser] = await createGuestUser();
-        return { ...guestUser, type: 'guest' };
+        return { ...guestUser, type: 'guest', role: 'user' as UserRole };
       },
     }),
   ],
@@ -80,6 +93,8 @@ export const {
         token.id = user.id as string;
         token.type = user.type;
         token.role = user.role;
+        token.stripeCustomerId = user.stripeCustomerId;
+        token.subscriptionStatus = user.subscriptionStatus;
       }
 
       return token;
@@ -89,6 +104,8 @@ export const {
         session.user.id = token.id;
         session.user.type = token.type;
         session.user.role = token.role;
+        session.user.stripeCustomerId = token.stripeCustomerId;
+        session.user.subscriptionStatus = token.subscriptionStatus;
       }
 
       return session;
