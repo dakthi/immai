@@ -24,14 +24,23 @@ export async function POST(req: NextRequest) {
         const paymentIntent = event.data.object;
         console.log('Payment succeeded:', paymentIntent.id);
 
-        // Handle document purchases
+        // Handle document purchases and pro subscriptions
+        console.log(`Looking for payment record with Stripe payment intent ID: ${paymentIntent.id}`);
+        
         const [paymentRecord] = await db
           .select()
           .from(payment)
           .where(eq(payment.stripePaymentIntentId, paymentIntent.id))
           .limit(1);
 
-        if (paymentRecord && paymentRecord.documentId) {
+        if (paymentRecord) {
+          console.log(`Found payment record:`, {
+            id: paymentRecord.id,
+            userId: paymentRecord.userId,
+            documentId: paymentRecord.documentId,
+            paymentType: paymentRecord.paymentType,
+            status: paymentRecord.status
+          });
           // Update payment status
           await db
             .update(payment)
@@ -41,32 +50,64 @@ export async function POST(req: NextRequest) {
             })
             .where(eq(payment.id, paymentRecord.id));
 
-          // Grant document access
-          const existingAccess = await db
+          // Grant document access (only for document purchases)
+          if (paymentRecord.documentId) {
+            const existingAccess = await db
+              .select()
+              .from(userDocumentAccess)
+              .where(and(
+                eq(userDocumentAccess.userId, paymentRecord.userId),
+                eq(userDocumentAccess.documentId, paymentRecord.documentId)
+              ))
+              .limit(1);
+
+            if (existingAccess.length === 0) {
+              await db.insert(userDocumentAccess).values({
+                userId: paymentRecord.userId,
+                documentId: paymentRecord.documentId,
+                paymentId: paymentRecord.id,
+                accessType: 'purchased',
+                downloadCount: 0,
+              });
+
+              console.log(`Granted access to document ${paymentRecord.documentId} for user ${paymentRecord.userId}`);
+            }
+          } else {
+            // This is a pro subscription payment
+            console.log(`Completed pro subscription payment for user ${paymentRecord.userId}`);
+          }
+
+          // Check if user should be upgraded to paiduser
+          // If user has made any successful payment, upgrade them
+          const [userRecord] = await db
             .select()
-            .from(userDocumentAccess)
-            .where(and(
-              eq(userDocumentAccess.userId, paymentRecord.userId),
-              eq(userDocumentAccess.documentId, paymentRecord.documentId)
-            ))
+            .from(user)
+            .where(eq(user.id, paymentRecord.userId))
             .limit(1);
 
-          if (existingAccess.length === 0) {
-            await db.insert(userDocumentAccess).values({
-              userId: paymentRecord.userId,
-              documentId: paymentRecord.documentId,
-              paymentId: paymentRecord.id,
-              accessType: 'purchased',
-              downloadCount: 0,
-            });
+          console.log(`User record found:`, {
+            id: userRecord?.id,
+            email: userRecord?.email,
+            currentRole: userRecord?.role
+          });
 
-            // Increment download count for the document
-            await db.execute(
-              `UPDATE "DocumentLibrary" SET "downloadCount" = "downloadCount" + 1 WHERE id = '${paymentRecord.documentId}'`
-            );
+          if (userRecord && userRecord.role === 'user') {
+            await db
+              .update(user)
+              .set({
+                role: 'paiduser',
+                updatedAt: new Date(),
+              })
+              .where(eq(user.id, paymentRecord.userId));
 
-            console.log(`Granted access to document ${paymentRecord.documentId} for user ${paymentRecord.userId}`);
+            console.log(`✅ Successfully upgraded user ${paymentRecord.userId} from 'user' to 'paiduser' status`);
+          } else if (userRecord) {
+            console.log(`User ${paymentRecord.userId} already has role: ${userRecord.role}, no upgrade needed`);
+          } else {
+            console.error(`❌ User record not found for userId: ${paymentRecord.userId}`);
           }
+        } else {
+          console.log(`❌ No payment record found for Stripe payment intent ID: ${paymentIntent.id}`);
         }
         break;
       }

@@ -22,6 +22,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from './toast';
 import { LoaderIcon } from './icons';
 import { guestRegex } from '@/lib/constants';
+import { Badge } from '@/components/ui/badge';
 
 export function SidebarUserNav({ user }: { user: User }) {
   const router = useRouter();
@@ -59,9 +60,17 @@ export function SidebarUserNav({ user }: { user: User }) {
                   height={24}
                   className="rounded-full"
                 />
-                <span data-testid="user-email" className="truncate">
-                  {isGuest ? 'Guest' : user?.email}
-                </span>
+                <div className="flex flex-col items-start flex-1 min-w-0">
+                  <span data-testid="user-email" className="truncate text-sm">
+                    {isGuest ? 'Guest' : user?.email}
+                  </span>
+                  {!isGuest && user.role && (
+                    <Badge variant="outline" className="text-xs mt-1">
+                      {user.role === 'paiduser' ? 'Paid User' : 
+                       user.role === 'admin' ? 'Admin' : 'Regular User'}
+                    </Badge>
+                  )}
+                </div>
                 <ChevronUp className="ml-auto" />
               </SidebarMenuButton>
             )}

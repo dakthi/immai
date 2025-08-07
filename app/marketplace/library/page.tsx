@@ -129,6 +129,26 @@ export default async function LibraryPage() {
           </div>
         </Card>
       )}
+
+      {session.user.role === 'paiduser' && (
+        <Card className="p-6 bg-green-50 border-green-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-green-900 mb-2">
+                ✅ You&apos;re a Paid User!
+              </h3>
+              <p className="text-sm text-green-700">
+                You can now upload documents and access premium features.
+              </p>
+            </div>
+            <Link href="/marketplace/upload">
+              <Badge className="cursor-pointer bg-green-600">
+                Upload Document
+              </Badge>
+            </Link>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

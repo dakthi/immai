@@ -62,12 +62,14 @@ export default async function TestStripePage({
       )}
 
       <Card className="p-6">
-        <h2 className="text-lg font-semibold mb-4">Test API Endpoints</h2>
+        <h2 className="text-lg font-semibold mb-4">Debug Tools</h2>
         <div className="space-y-2">
-          <div className="text-sm">
-            <p><strong>Create Payment Intent:</strong> POST /api/stripe/create-payment-intent</p>
-            <p><strong>Create Subscription:</strong> POST /api/stripe/create-subscription</p>
-            <p><strong>Webhooks:</strong> POST /api/stripe/webhooks</p>
+          <div className="text-sm space-y-1">
+            <p><strong>API Endpoints:</strong></p>
+            <p>• GET /api/debug/payments - View your payment history</p>
+            <p>• POST /api/debug/trigger-upgrade - Manually trigger upgrade</p>
+            <p>• POST /api/stripe/create-payment-intent</p>
+            <p>• POST /api/stripe/webhooks</p>
           </div>
         </div>
       </Card>

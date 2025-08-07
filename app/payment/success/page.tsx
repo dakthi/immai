@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { SessionRefreshClient } from './session-refresh-client';
 
 export default async function PaymentSuccessPage() {
   const session = await auth();
@@ -13,6 +14,7 @@ export default async function PaymentSuccessPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-6">
+      <SessionRefreshClient />
       <div className="text-center">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg

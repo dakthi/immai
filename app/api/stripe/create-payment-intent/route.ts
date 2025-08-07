@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/(auth)/auth';
 import { createPaymentIntent, createStripeCustomer } from '@/lib/stripe';
 import { db } from '@/lib/db';
-import { user } from '@/lib/db/schema';
+import { user, payment } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function POST(req: NextRequest) {
@@ -34,6 +34,23 @@ export async function POST(req: NextRequest) {
     }
 
     const paymentIntent = await createPaymentIntent(amount, customerId, currency);
+
+    // Create payment record for subscription/pro upgrade
+    const paymentData = {
+      userId: session.user.id,
+      documentId: null, // This is for pro subscription, not a specific document
+      paymentType: 'package' as const, // Using 'package' for pro subscriptions
+      stripePaymentIntentId: paymentIntent.id,
+      amount: (amount / 100).toFixed(2),
+      currency: currency.toUpperCase(),
+      status: 'pending' as const,
+    };
+    
+    console.log('Creating payment record:', paymentData);
+    
+    await db.insert(payment).values(paymentData);
+    
+    console.log(`✅ Payment record created for user ${session.user.id} with Stripe payment intent ${paymentIntent.id}`);
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,

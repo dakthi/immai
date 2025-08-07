@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Settings, FileText, ArrowLeft, Home, Plus, Database, Sliders } from 'lucide-react';
+import { Settings, FileText, ArrowLeft, Home, Plus, Database, Sliders, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sidebar,
@@ -21,6 +21,11 @@ const adminMenuItems = [
     title: "Dashboard",
     href: "/admin",
     icon: Home,
+  },
+  {
+    title: "User Management",
+    href: "/admin/users",
+    icon: Users,
   },
   {
     title: "Content Management",

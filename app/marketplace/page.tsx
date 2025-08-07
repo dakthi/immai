@@ -125,7 +125,10 @@ export default async function MarketplacePage({
             <div>
               <h3 className="font-semibold text-blue-900">Your Account Status</h3>
               <p className="text-sm text-blue-700">
-                Role: <Badge variant="outline">{session.user.role}</Badge>
+                Role: <Badge variant="outline">
+                  {session.user.role === 'paiduser' ? 'Paid User' : 
+                   session.user.role === 'admin' ? 'Admin' : 'Regular User'}
+                </Badge>
                 {session.user.role === 'user' && (
                   <span className="ml-2">
                     Upgrade to access premium features and upload documents

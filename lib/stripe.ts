@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 import { db } from '@/lib/db';
-import { user } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { user, payment } from '@/lib/db/schema';
+import { eq, and } from 'drizzle-orm';
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('STRIPE_SECRET_KEY is not set');
@@ -64,11 +64,25 @@ export async function updateUserToPaid(userId: string, stripeCustomerId: string,
 }
 
 export async function updateUserSubscriptionStatus(userId: string, status: 'active' | 'inactive' | 'trialing' | 'past_due' | 'canceled' | 'unpaid') {
+  // Check if user has any completed payments
+  const hasCompletedPayments = await db
+    .select({ count: payment.id })
+    .from(payment)
+    .where(and(
+      eq(payment.userId, userId),
+      eq(payment.status, 'completed')
+    ))
+    .limit(1);
+
+  // Only downgrade role if user has no completed payments
+  // Users who have made any payment should stay as 'paiduser'
+  const shouldMaintainPaidStatus = hasCompletedPayments.length > 0;
+  
   await db
     .update(user)
     .set({
       subscriptionStatus: status,
-      role: status === 'active' ? 'paiduser' : 'user',
+      role: status === 'active' ? 'paiduser' : (shouldMaintainPaidStatus ? 'paiduser' : 'user'),
       updatedAt: new Date(),
     })
     .where(eq(user.id, userId));
