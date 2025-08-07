@@ -1,7 +1,6 @@
 import { getCMSContent } from '../actions';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { RefreshCw, Zap, Database } from 'lucide-react';
+import { Database } from 'lucide-react';
 import { RegenerateAllButton, RegenerateButton } from './regenerate-buttons';
 
 
@@ -32,7 +31,7 @@ export default async function EmbeddingsPage() {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-1">
-                <Database className="w-4 h-4" />
+                <Database className="size-4" />
                 With Embeddings
               </CardTitle>
             </CardHeader>

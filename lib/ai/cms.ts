@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { cmsContent } from '@/lib/db/schema';
-import { eq, and, sql, desc } from 'drizzle-orm';
+import { eq, and, sql, } from 'drizzle-orm';
 import { generateEmbedding, prepareTextForEmbedding, cosineSimilarity } from './embeddings';
 
 export async function getCMSPrompts(userId: string) {
@@ -60,8 +60,8 @@ export async function getAllUserCMSContent(userId: string) {
 export async function findSimilarContent(
   query: string,
   userId: string,
-  limit: number = 5,
-  threshold: number = 0.7
+  limit = 5,
+  threshold = 0.7
 ) {
   console.log('🔍 [CMS] Starting similarity search');
   console.log('👤 [CMS] User ID:', userId);
@@ -102,7 +102,11 @@ export async function findSimilarContent(
       .map((item, index) => {
         try {
           console.log(`📐 [CMS] Processing document ${index + 1}/${allContent.length}: "${item.title}"`);
-          const itemEmbedding = JSON.parse(item.embedding!);
+          if (!item.embedding) {
+            console.error('❌ [CMS] Missing embedding for item:', item.id);
+            return null;
+          }
+          const itemEmbedding = JSON.parse(item.embedding);
           const similarity = cosineSimilarity(queryEmbedding, itemEmbedding);
           
           const result = {

@@ -76,9 +76,9 @@ export const Greeting = ({ onTopicSelect }: GreetingProps) => {
         transition={{ delay: 0.7 }}
         className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto"
       >
-        {topics.map((topic, index) => (
+        {topics.map((topic) => (
           <Button
-            key={index}
+            key={topic.query}
             variant="outline"
             className="h-auto p-4 text-left flex flex-col items-start space-y-2 hover:bg-accent transition-colors"
             onClick={() => onTopicSelect?.(topic.query)}

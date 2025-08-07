@@ -1,6 +1,5 @@
 import 'server-only';
 import { findSimilarContent } from './cms';
-import { generateEmbedding } from './embeddings';
 import { getRAGSettings } from '@/lib/rag-settings';
 
 export interface RAGContext {
@@ -129,7 +128,7 @@ function summarizeContent(excerpts: string[], title: string): string {
   
   // If it's too long, truncate to first 150 characters
   if (mainExcerpt.length > 150) {
-    return mainExcerpt.substring(0, 147) + '...';
+    return `${mainExcerpt.substring(0, 147)}...`;
   }
   
   return mainExcerpt;
@@ -161,8 +160,8 @@ function generateContextSummary(sources: any[]): string {
 export async function getRAGContext(
   userMessage: string,
   userId: string,
-  threshold: number = 0.65,
-  maxResults: number = 5
+  threshold = 0.65,
+  maxResults = 5
 ): Promise<RAGContext> {
   console.log('🚀 [RAG] Starting RAG context retrieval');
   console.log('👤 [RAG] User ID:', userId);
@@ -212,7 +211,7 @@ ${metadata}
 Summary: ${summary}`;
     });
 
-    const context = contextParts.join('\n\n' + '─'.repeat(80) + '\n\n');
+    const context = contextParts.join(`\n\n${'─'.repeat(80)}\n\n`);
     
     const sources = enhancedResults.map(result => ({
       id: result.id,
@@ -228,7 +227,7 @@ Summary: ${summary}`;
     const contextSummary = generateContextSummary(results);
 
     console.log('📋 [RAG] Final context length:', context.length, 'characters');
-    console.log('📊 [RAG] Average similarity:', (averageSimilarity * 100).toFixed(1) + '%');
+    console.log('📊 [RAG] Average similarity:', `${(averageSimilarity * 100).toFixed(1)}%`);
     console.log('✅ [RAG] RAG context retrieval completed successfully');
 
     return {
@@ -297,11 +296,11 @@ async function searchWithDynamicThreshold(
   expandedQueries: string[],
   userId: string,
   maxResults: number,
-  initialThreshold: number = 0.6
+  initialThreshold = 0.6
 ): Promise<any[]> {
   const settings = getRAGSettings();
   const thresholds = [initialThreshold, 0.45, settings.minThreshold]; // Use dynamic min threshold
-  let allResults = new Map();
+  const allResults = new Map();
   
   for (const threshold of thresholds) {
     console.log(`🎯 [RAG-DYNAMIC] Trying threshold: ${threshold}`);
@@ -397,7 +396,7 @@ ${metadata}
 Summary: ${summary}`;
     });
 
-    const context = contextParts.join('\n\n' + '─'.repeat(80) + '\n\n');
+    const context = contextParts.join(`\n\n${'─'.repeat(80)}\n\n`);
     
     const sources = enhancedResults.map(result => ({
       id: result.id,
@@ -437,7 +436,7 @@ export async function processMessageWithRAG(
   originalPrompt: string,
   userMessage: string,
   userId: string,
-  useAdvanced: boolean = true
+  useAdvanced = true
 ): Promise<{ prompt: string; context: RAGContext }> {
   console.log('🚀 [RAG-PROCESS] Starting RAG processing');
   console.log('👤 [RAG-PROCESS] User ID:', userId);

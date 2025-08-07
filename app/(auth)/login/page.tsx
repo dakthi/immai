@@ -44,7 +44,7 @@ function LoginForm() {
       const callbackUrl = searchParams.get('callbackUrl') || searchParams.get('redirectUrl') || '/';
       router.push(decodeURIComponent(callbackUrl));
     }
-  }, [state.status]);
+  }, [state.status, router, searchParams, updateSession]);
 
   const handleSubmit = (formData: FormData) => {
     setEmail(formData.get('email') as string);

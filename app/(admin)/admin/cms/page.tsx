@@ -2,7 +2,7 @@ import { getCMSContent } from './actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { Plus, Edit, Trash2, FileText, Settings, Code, File } from 'lucide-react';
+import { Plus, Edit, FileText, Settings, Code, File } from 'lucide-react';
 
 const typeIcons = {
   prompt: Code,
@@ -20,7 +20,7 @@ export default async function CMSPage() {
         <h1 className="text-3xl font-bold">Content Management</h1>
         <Button asChild>
           <Link href="/admin/cms/new">
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="size-4 mr-2" />
             Add Content
           </Link>
         </Button>
@@ -44,7 +44,7 @@ export default async function CMSPage() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Icon className="w-5 h-5" />
+                      <Icon className="size-5" />
                       <CardTitle>{item.title}</CardTitle>
                       <span className="text-sm bg-secondary px-2 py-1 rounded">
                         {item.type}
@@ -58,7 +58,7 @@ export default async function CMSPage() {
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" asChild>
                         <Link href={`/admin/cms/${item.id}/edit`}>
-                          <Edit className="w-4 h-4" />
+                          <Edit className="size-4" />
                         </Link>
                       </Button>
                     </div>
@@ -75,9 +75,9 @@ export default async function CMSPage() {
                   )}
                   {item.tags && item.tags.length > 0 && (
                     <div className="flex gap-1 mb-2">
-                      {item.tags.map((tag, index) => (
+                      {item.tags.map((tag) => (
                         <span
-                          key={index}
+                          key={tag}
                           className="text-xs bg-primary/10 px-2 py-1 rounded"
                         >
                           {tag}

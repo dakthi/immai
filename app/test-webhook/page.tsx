@@ -58,8 +58,9 @@ export default function TestWebhookPage() {
         
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Payment Intent ID</label>
+            <label htmlFor="payment-intent-id" className="block text-sm font-medium mb-2">Payment Intent ID</label>
             <Input 
+              id="payment-intent-id"
               value={paymentIntentId}
               onChange={(e) => setPaymentIntentId(e.target.value)}
               placeholder="pi_3RtIJZAAGmdRUxBY0KGF2YFk"

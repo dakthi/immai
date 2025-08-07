@@ -1,5 +1,4 @@
 import { auth } from '@/app/(auth)/auth';
-import { requirePaidUser } from '@/lib/auth-helpers';
 import { redirect } from 'next/navigation';
 import { UploadForm } from './components/upload-form';
 

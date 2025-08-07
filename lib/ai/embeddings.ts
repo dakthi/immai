@@ -1,5 +1,5 @@
 import 'server-only';
-import { openai, createOpenAI } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
 import { embed, embedMany } from 'ai';
 
 // Initialize OpenAI provider
@@ -27,7 +27,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
     const duration = Date.now() - startTime;
     console.log('✅ [EMBED] Embedding generated successfully');
     console.log('📊 [EMBED] Embedding dimensions:', embedding.length);
-    console.log('⏱️ [EMBED] Generation time:', duration + 'ms');
+    console.log('⏱️ [EMBED] Generation time:', `${duration}ms`);
     
     return embedding;
   } catch (error) {
@@ -52,8 +52,8 @@ export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
     const duration = Date.now() - startTime;
     console.log('✅ [EMBED-BATCH] Batch embeddings generated successfully');
     console.log('📊 [EMBED-BATCH] Generated', embeddings.length, 'embeddings');
-    console.log('⏱️ [EMBED-BATCH] Total generation time:', duration + 'ms');
-    console.log('⚡ [EMBED-BATCH] Average time per embedding:', Math.round(duration / embeddings.length) + 'ms');
+    console.log('⏱️ [EMBED-BATCH] Total generation time:', `${duration}ms`);
+    console.log('⚡ [EMBED-BATCH] Average time per embedding:', `${Math.round(duration / embeddings.length)}ms`);
     
     return embeddings;
   } catch (error) {

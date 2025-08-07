@@ -19,8 +19,6 @@ import {
 } from '@/lib/db/queries';
 import { convertToUIMessages, generateUUID } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
-import { createDocument } from '@/lib/ai/tools/create-document';
-import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
 // import { searchKnowledge } from '@/lib/ai/tools/search-knowledge';
@@ -39,8 +37,6 @@ import { ChatSDKError } from '@/lib/errors';
 import type { ChatMessage } from '@/lib/types';
 import type { ChatModel } from '@/lib/ai/models';
 import type { VisibilityType } from '@/components/visibility-selector';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
 
 export const maxDuration = 60;
 
@@ -191,7 +187,7 @@ export async function POST(request: Request) {
         console.log('📝 [CHAT] ===== MESSAGES SENT TO AI =====');
         const convertedMessages = convertToModelMessages(uiMessages);
         convertedMessages.forEach((msg, index) => {
-          console.log(`💬 [CHAT] Message ${index + 1} (${msg.role}):`, JSON.stringify(msg.content).substring(0, 200) + '...');
+          console.log(`💬 [CHAT] Message ${index + 1} (${msg.role}):`, `${JSON.stringify(msg.content).substring(0, 200)}...`);
         });
         console.log('📝 [CHAT] ===== END MESSAGES =====');
 

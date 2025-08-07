@@ -22,9 +22,9 @@ export default async function PaymentFailedPage({
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-6">
       <div className="text-center">
-        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="size-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
-            className="w-8 h-8 text-red-600"
+            className="size-8 text-red-600"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -63,19 +63,19 @@ export default async function PaymentFailedPage({
         <h2 className="text-lg font-semibold mb-4">What can you do?</h2>
         <div className="space-y-3 text-sm text-gray-600">
           <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+            <div className="size-2 bg-blue-500 rounded-full mt-2" />
             <p>Check that your card details are correct</p>
           </div>
           <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+            <div className="size-2 bg-blue-500 rounded-full mt-2" />
             <p>Ensure you have sufficient funds</p>
           </div>
           <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+            <div className="size-2 bg-blue-500 rounded-full mt-2" />
             <p>Try a different payment method</p>
           </div>
           <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+            <div className="size-2 bg-blue-500 rounded-full mt-2" />
             <p>Contact your bank if the problem persists</p>
           </div>
         </div>

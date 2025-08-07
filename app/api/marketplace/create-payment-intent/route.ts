@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/(auth)/auth';
 import { createPaymentIntent, createStripeCustomer } from '@/lib/stripe';
 import { db } from '@/lib/db';
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify amount matches document price
-    const expectedAmount = Math.round(parseFloat(document.price || '0') * 100);
+    const expectedAmount = Math.round(Number.parseFloat(document.price || '0') * 100);
     if (amount !== expectedAmount) {
       return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
     }
@@ -45,8 +45,12 @@ export async function POST(req: NextRequest) {
     let customerId = session.user.stripeCustomerId;
 
     if (!customerId) {
+      if (!session.user.email) {
+        return NextResponse.json({ error: 'User email is required' }, { status: 400 });
+      }
+      
       const customer = await createStripeCustomer(
-        session.user.email!,
+        session.user.email,
         session.user.name || undefined
       );
       customerId = customer.id;

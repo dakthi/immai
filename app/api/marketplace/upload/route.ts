@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/(auth)/auth';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import { writeFile, mkdir } from 'node:fs/promises';
+import path from 'node:path';
 import { nanoid } from 'nanoid';
 
 export async function POST(req: NextRequest) {

@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  let token;
+  let token: any;
   try {
     token = await getToken({
       req: request,

@@ -113,7 +113,7 @@ export function DocumentActions({ document, hasAccess, currentUser }: DocumentAc
               <>
                 <Link href={`/marketplace/purchase/${document.id}`}>
                   <Button className="w-full" size="lg">
-                    💳 Purchase for ${parseFloat(document.price || '0').toFixed(2)}
+                    💳 Purchase for ${Number.parseFloat(document.price || '0').toFixed(2)}
                   </Button>
                 </Link>
                 <p className="text-xs text-gray-600 text-center">

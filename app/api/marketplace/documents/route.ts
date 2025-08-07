@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/(auth)/auth';
 import { db } from '@/lib/db';
 import { documentLibrary } from '@/lib/db/schema';
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
         tags: Array.isArray(tags) ? tags : [],
         fileName,
         filePath,
-        fileSize: parseInt(fileSize.toString()),
+        fileSize: Number.parseInt(fileSize.toString()),
         fileType,
         uploadedBy,
         downloadCount: 0,

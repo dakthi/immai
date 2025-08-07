@@ -1,19 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { stripe, updateUserToPaid, updateUserSubscriptionStatus } from '@/lib/stripe';
 import { db } from '@/lib/db';
-import { user, payment, userDocumentAccess, documentLibrary } from '@/lib/db/schema';
+import { user, payment, userDocumentAccess, } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+if (!webhookSecret) {
+  console.error('STRIPE_WEBHOOK_SECRET environment variable is not set');
+  throw new Error('STRIPE_WEBHOOK_SECRET is not configured');
+}
+const validWebhookSecret: string = webhookSecret;
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.text();
-    const signature = req.headers.get('stripe-signature')!;
+    const signature = req.headers.get('stripe-signature');
+    
+    if (!signature) {
+      console.error('Missing stripe-signature header');
+      return NextResponse.json({ error: 'Missing signature' }, { status: 400 });
+    }
 
-    let event;
+    let event: any;
     try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+      event = stripe.webhooks.constructEvent(body, signature, validWebhookSecret);
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });

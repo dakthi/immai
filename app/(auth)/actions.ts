@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import { createUser, getUser, setPasswordResetToken, getUserByResetToken, resetPassword } from '@/lib/db/queries';
 

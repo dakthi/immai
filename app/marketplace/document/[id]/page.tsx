@@ -124,7 +124,7 @@ export default async function DocumentPage({
           {document.isFree ? (
             <Badge variant="secondary" className="text-lg px-3 py-1">Free</Badge>
           ) : (
-            <Badge className="text-lg px-3 py-1">${parseFloat(document.price || '0').toFixed(2)}</Badge>
+            <Badge className="text-lg px-3 py-1">${Number.parseFloat(document.price || '0').toFixed(2)}</Badge>
           )}
         </div>
       </div>
@@ -200,7 +200,7 @@ export default async function DocumentPage({
             <Card className="p-6">
               <h2 className="text-lg font-semibold mb-4">Uploaded by</h2>
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                <div className="size-10 bg-gray-300 rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium text-gray-700">
                     {uploader.name?.charAt(0)?.toUpperCase() || 'U'}
                   </span>

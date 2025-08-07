@@ -131,7 +131,7 @@ export default async function PurchasePage({
             <div className="flex justify-between items-center">
               <span className="text-lg font-semibold">Total:</span>
               <span className="text-2xl font-bold text-green-600">
-                ${parseFloat(document.price || '0').toFixed(2)}
+                ${Number.parseFloat(document.price || '0').toFixed(2)}
               </span>
             </div>
           </div>

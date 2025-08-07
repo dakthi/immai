@@ -5,7 +5,6 @@ import { db } from '@/lib/db';
 import { cmsContent } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 import { generateEmbedding, prepareTextForEmbedding } from '@/lib/ai/embeddings';
 
 export async function getCMSContent() {

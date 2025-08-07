@@ -35,8 +35,8 @@ export default async function TestPage() {
         <h2 className="text-lg font-semibold mb-2">Search Test Results</h2>
         <p>Search query: &quot;Canada immigration&quot;</p>
         <p>Results found: {searchResults.length}</p>
-        {searchResults.map((result, index) => (
-          <div key={index} className="border p-2 mt-2">
+        {searchResults.map((result) => (
+          <div key={`${result.title}-${result.similarity}`} className="border p-2 mt-2">
             <h3 className="font-medium">{result.title}</h3>
             <p className="text-sm text-gray-600">Similarity: {result.similarity.toFixed(3)}</p>
             <p className="text-sm">{result.content.substring(0, 100)}...</p>

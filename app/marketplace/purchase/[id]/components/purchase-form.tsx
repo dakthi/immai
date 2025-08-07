@@ -12,7 +12,12 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import type { DocumentLibrary } from '@/lib/db/schema';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
+const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
+if (!stripePublicKey) {
+  throw new Error('NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not configured');
+}
+
+const stripePromise = loadStripe(stripePublicKey);
 
 interface PaymentFormProps {
   clientSecret: string;
@@ -100,7 +105,7 @@ export function PurchaseForm({ document, userId }: PurchaseFormProps) {
         },
         body: JSON.stringify({ 
           documentId: document.id,
-          amount: Math.round(parseFloat(document.price || '0') * 100) // Convert to cents
+          amount: Math.round(Number.parseFloat(document.price || '0') * 100) // Convert to cents
         }),
       });
 
@@ -152,7 +157,7 @@ export function PurchaseForm({ document, userId }: PurchaseFormProps) {
             disabled={isLoading}
             className="w-full"
           >
-            {isLoading ? 'Preparing payment...' : `Pay $${parseFloat(document.price || '0').toFixed(2)}`}
+            {isLoading ? 'Preparing payment...' : `Pay $${Number.parseFloat(document.price || '0').toFixed(2)}`}
           </Button>
         </div>
       </Card>
@@ -162,7 +167,7 @@ export function PurchaseForm({ document, userId }: PurchaseFormProps) {
   return (
     <Card className="p-6">
       <h2 className="text-xl font-semibold mb-4">
-        Complete Payment ($${parseFloat(document.price || '0').toFixed(2)})
+        Complete Payment ($${Number.parseFloat(document.price || '0').toFixed(2)})
       </h2>
       <Elements options={options} stripe={stripePromise}>
         <PaymentForm 

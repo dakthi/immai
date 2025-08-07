@@ -25,7 +25,7 @@ export function RegenerateAllButton() {
 
   return (
     <Button onClick={handleClick} disabled={loading} className="w-full">
-      <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+      <RefreshCw className={`size-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
       {loading ? 'Regenerating...' : 'Regenerate All Embeddings'}
     </Button>
   );
@@ -55,7 +55,7 @@ export function RegenerateButton({ contentId }: { contentId: string }) {
       variant="outline" 
       size="sm"
     >
-      <Zap className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+      <Zap className={`size-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
       {loading ? 'Regenerating...' : 'Regenerate'}
     </Button>
   );

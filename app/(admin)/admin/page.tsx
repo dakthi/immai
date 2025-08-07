@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { FileText, Plus, Settings } from 'lucide-react';
+import { FileText, Plus, } from 'lucide-react';
 
 export default function AdminDashboard() {
   return (
@@ -12,7 +12,7 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5" />
+              <FileText className="size-5" />
               Content Management
             </CardTitle>
           </CardHeader>
@@ -31,7 +31,7 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Plus className="w-5 h-5" />
+              <Plus className="size-5" />
               Quick Actions
             </CardTitle>
           </CardHeader>

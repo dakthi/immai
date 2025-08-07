@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { Settings, FileText, ArrowLeft, Home, Plus, Database, Sliders, Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import {
   Sidebar,
   SidebarContent,
@@ -54,7 +53,7 @@ function AdminSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/admin">
-                <Settings className="w-6 h-6" />
+                <Settings className="size-6" />
                 <span className="text-lg font-semibold">Admin Panel</span>
               </Link>
             </SidebarMenuButton>
@@ -70,7 +69,7 @@ function AdminSidebar() {
                 isActive={pathname === item.href}
               >
                 <Link href={item.href}>
-                  <item.icon className="w-4 h-4" />
+                  <item.icon className="size-4" />
                   {item.title}
                 </Link>
               </SidebarMenuButton>
@@ -82,7 +81,7 @@ function AdminSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link href="/admin/cms/new">
-                <Plus className="w-4 h-4" />
+                <Plus className="size-4" />
                 Add Content
               </Link>
             </SidebarMenuButton>
@@ -94,7 +93,7 @@ function AdminSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link href="/">
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="size-4" />
                 Back to Chat
               </Link>
             </SidebarMenuButton>

@@ -37,18 +37,18 @@ export function resetRAGSettings(): RAGSettings {
 // Load settings from environment variables if available
 if (typeof process !== 'undefined' && process.env) {
   if (process.env.RAG_THRESHOLD) {
-    currentSettings.threshold = parseFloat(process.env.RAG_THRESHOLD);
+    currentSettings.threshold = Number.parseFloat(process.env.RAG_THRESHOLD);
   }
   if (process.env.RAG_MAX_RESULTS) {
-    currentSettings.maxResults = parseInt(process.env.RAG_MAX_RESULTS);
+    currentSettings.maxResults = Number.parseInt(process.env.RAG_MAX_RESULTS);
   }
   if (process.env.RAG_MAX_EXCERPTS) {
-    currentSettings.maxExcerpts = parseInt(process.env.RAG_MAX_EXCERPTS);
+    currentSettings.maxExcerpts = Number.parseInt(process.env.RAG_MAX_EXCERPTS);
   }
   if (process.env.RAG_TEMPERATURE) {
-    currentSettings.temperature = parseFloat(process.env.RAG_TEMPERATURE);
+    currentSettings.temperature = Number.parseFloat(process.env.RAG_TEMPERATURE);
   }
   if (process.env.RAG_MIN_THRESHOLD) {
-    currentSettings.minThreshold = parseFloat(process.env.RAG_MIN_THRESHOLD);
+    currentSettings.minThreshold = Number.parseFloat(process.env.RAG_MIN_THRESHOLD);
   }
 }

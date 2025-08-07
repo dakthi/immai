@@ -16,9 +16,9 @@ export default async function PaymentSuccessPage() {
     <div className="max-w-2xl mx-auto p-6 space-y-6">
       <SessionRefreshClient />
       <div className="text-center">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="size-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
-            className="w-8 h-8 text-green-600"
+            className="size-8 text-green-600"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -43,15 +43,15 @@ export default async function PaymentSuccessPage() {
         <h2 className="text-lg font-semibold mb-4">What&apos;s Next?</h2>
         <div className="space-y-3 text-sm text-gray-600">
           <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+            <div className="size-2 bg-blue-500 rounded-full mt-2" />
             <p>Your account will be updated to Pro status within a few minutes</p>
           </div>
           <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+            <div className="size-2 bg-blue-500 rounded-full mt-2" />
             <p>You&apos;ll receive a confirmation email shortly</p>
           </div>
           <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+            <div className="size-2 bg-blue-500 rounded-full mt-2" />
             <p>All premium features are now available to you</p>
           </div>
         </div>

@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/(auth)/auth';
 import { db } from '@/lib/db';
 import { documentLibrary, userDocumentAccess, downloadHistory } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { readFile } from 'fs/promises';
-import path from 'path';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 
 export async function GET(
   req: NextRequest,

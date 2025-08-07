@@ -66,7 +66,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                     asChild
                   >
                     <Link href="/marketplace">
-                      <Store className="w-4 h-4" />
+                      <Store className="size-4" />
                     </Link>
                   </Button>
                 </TooltipTrigger>
@@ -83,7 +83,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                         asChild
                       >
                         <Link href="/marketplace/library">
-                          <Library className="w-4 h-4" />
+                          <Library className="size-4" />
                         </Link>
                       </Button>
                     </TooltipTrigger>
@@ -98,7 +98,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                         asChild
                       >
                         <Link href="/admin">
-                          <Settings className="w-4 h-4" />
+                          <Settings className="size-4" />
                         </Link>
                       </Button>
                     </TooltipTrigger>

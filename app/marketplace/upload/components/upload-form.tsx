@@ -278,7 +278,12 @@ export function UploadForm({ userId }: UploadFormProps) {
                     value={formData.tagInput}
                     onChange={(e) => setFormData(prev => ({ ...prev, tagInput: e.target.value }))}
                     placeholder="Add a tag"
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addTag();
+                      }
+                    }}
                   />
                   <Button type="button" onClick={addTag} size="sm">
                     Add
