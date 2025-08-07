@@ -8,12 +8,15 @@ export const isTestEnvironment = Boolean(
 
 export const guestRegex = /^guest-\d+$/;
 
-let _dummyPassword: string | null = null;
+let _dummyPassword: string | undefined;
 
 export function getDummyPassword(): string {
-  if (!_dummyPassword) {
+  if (_dummyPassword === undefined) {
     const { generateDummyPassword } = require('./db/utils');
     _dummyPassword = generateDummyPassword();
   }
-  return _dummyPassword!;
+  if (!_dummyPassword) {
+    throw new Error('Failed to generate dummy password');
+  }
+  return _dummyPassword;
 }
