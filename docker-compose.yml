@@ -1,0 +1,32 @@
+services:
+  app:
+    build: .
+    container_name: immai_app
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://immai_user:immai123@db:5432/immai_db
+      NEXTAUTH_SECRET: "your_very_secure_random_string_here"
+    depends_on:
+      - db
+    networks:
+      - immai_network
+
+  db:
+    image: postgres:14
+    container_name: immai_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: immai_user
+      POSTGRES_PASSWORD: immai123
+      POSTGRES_DB: immai_db
+    volumes:
+      - immai_db_data:/var/lib/postgresql/data
+    networks:
+      - immai_network
+
+networks:
+  immai_network:
+
+volumes:
+  immai_db_data:
