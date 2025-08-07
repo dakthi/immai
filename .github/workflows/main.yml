@@ -77,4 +77,15 @@ jobs:
             docker load -i immai.tar
             docker stop immai || true
             docker rm immai || true
-            docker run -d --name immai -p 3000:3000 --restart unless-stopped immai:latest
+            docker run -d --name immai -p 3000:3000 --restart unless-stopped \
+              -e DATABASE_URL="$DATABASE_URL" \
+              -e NEXTAUTH_SECRET="$NEXTAUTH_SECRET" \
+              -e NEXTAUTH_URL="$NEXTAUTH_URL" \
+              -e OPENAI_API_KEY="$OPENAI_API_KEY" \
+              -e STRIPE_SECRET_KEY="$STRIPE_SECRET_KEY" \
+              -e STRIPE_PUBLISHABLE_KEY="$STRIPE_PUBLISHABLE_KEY" \
+              -e STRIPE_WEBHOOK_SECRET="$STRIPE_WEBHOOK_SECRET" \
+              immai:latest
+            
+            # Run database migrations on the VPS
+            docker exec immai pnpm db:migrate || echo "Migration failed, but continuing..."
