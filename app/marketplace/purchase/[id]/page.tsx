@@ -7,6 +7,8 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PurchaseForm } from './components/purchase-form';
 
+export const dynamic = 'force-dynamic';
+
 async function getDocument(id: string) {
   const [document] = await db
     .select()

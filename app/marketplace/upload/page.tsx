@@ -2,6 +2,8 @@ import { auth } from '@/app/(auth)/auth';
 import { redirect } from 'next/navigation';
 import { UploadForm } from './components/upload-form';
 
+export const dynamic = 'force-dynamic';
+
 export default async function UploadDocumentPage() {
   const session = await auth();
   

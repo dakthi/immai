@@ -73,19 +73,53 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd /root/docker-images/immai/
+            
+            # Clean up existing resources
+            echo "Cleaning up existing containers and processes..."
+            docker stop immai 2>/dev/null || true
+            docker rm -f immai 2>/dev/null || true
+            
+            # Kill any processes using port 3000
+            sudo lsof -ti:3000 | xargs sudo kill -9 2>/dev/null || true
+            
+            # Clean up Docker system
+            docker system prune -f
+            
+            # Load new image
+            echo "Loading new Docker image..."
             gunzip -f immai.tar.gz
             docker load -i immai.tar
-            docker stop immai || true
-            docker rm immai || true
+            
+            # Start new container with proper environment variables
+            echo "Starting new container..."
             docker run -d --name immai -p 3000:3000 --restart unless-stopped \
-              -e DATABASE_URL="$DATABASE_URL" \
-              -e NEXTAUTH_SECRET="$NEXTAUTH_SECRET" \
-              -e NEXTAUTH_URL="$NEXTAUTH_URL" \
-              -e OPENAI_API_KEY="$OPENAI_API_KEY" \
-              -e STRIPE_SECRET_KEY="$STRIPE_SECRET_KEY" \
-              -e STRIPE_PUBLISHABLE_KEY="$STRIPE_PUBLISHABLE_KEY" \
-              -e STRIPE_WEBHOOK_SECRET="$STRIPE_WEBHOOK_SECRET" \
+              -e DATABASE_URL="${DATABASE_URL}" \
+              -e NEXTAUTH_SECRET="${NEXTAUTH_SECRET}" \
+              -e NEXTAUTH_URL="${NEXTAUTH_URL}" \
+              -e OPENAI_API_KEY="${OPENAI_API_KEY}" \
+              -e STRIPE_SECRET_KEY="${STRIPE_SECRET_KEY}" \
+              -e STRIPE_PUBLISHABLE_KEY="${STRIPE_PUBLISHABLE_KEY}" \
+              -e STRIPE_WEBHOOK_SECRET="${STRIPE_WEBHOOK_SECRET}" \
               immai:latest
             
-            # Run database migrations on the VPS
-            docker exec immai pnpm db:migrate || echo "Migration failed, but continuing..."
+            # Wait for container to be ready
+            echo "Waiting for container to start..."
+            sleep 10
+            
+            # Check container status
+            if docker ps | grep -q immai; then
+              echo "Container started successfully"
+              
+              # Run database migrations
+              echo "Running database migrations..."
+              docker exec immai pnpm db:migrate || echo "Migration failed, but continuing..."
+              
+              # Verify application is responding
+              echo "Checking application health..."
+              sleep 5
+              curl -f http://localhost:3000 > /dev/null 2>&1 && echo "Application is healthy" || echo "Application may not be responding yet"
+            else
+              echo "Failed to start container"
+              docker logs immai || true
+              exit 1
+            fi

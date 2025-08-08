@@ -2,6 +2,8 @@ import { getCMSContent } from '../actions';
 import { findSimilarContent } from '@/lib/ai/cms';
 import { auth } from '@/app/(auth)/auth';
 
+export const dynamic = 'force-dynamic';
+
 export default async function TestPage() {
   const session = await auth();
   if (!session?.user?.id) {

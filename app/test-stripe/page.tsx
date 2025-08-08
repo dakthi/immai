@@ -3,6 +3,8 @@ import { StripePayment } from '@/components/stripe-payment';
 import { redirect } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 
+export const dynamic = 'force-dynamic';
+
 export default async function TestStripePage({
   searchParams,
 }: {

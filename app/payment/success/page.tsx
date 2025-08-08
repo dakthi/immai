@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { SessionRefreshClient } from './session-refresh-client';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PaymentSuccessPage() {
   const session = await auth();
 

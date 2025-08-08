@@ -9,6 +9,8 @@ import Link from 'next/link';
 import { DocumentCard } from './components/document-card';
 import { SearchFilter } from './components/search-filter';
 
+export const dynamic = 'force-dynamic';
+
 async function getDocuments() {
   return await db
     .select()
