@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useActionState, useEffect, useState, Suspense } from 'react';
-import Form from 'next/form';
+import { useEffect, useState, Suspense } from 'react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,12 +18,15 @@ function ResetPasswordForm() {
   
   const [isSuccessful, setIsSuccessful] = useState(false);
 
-  const [state, formAction] = useActionState<ResetPasswordActionState, FormData>(
-    resetPasswordWithToken,
-    {
-      status: 'idle',
-    },
-  );
+  const [state, setState] = useState<ResetPasswordActionState>({
+    status: 'idle',
+  });
+
+  const formAction = async (formData: FormData) => {
+    setState({ status: 'in_progress' });
+    const result = await resetPasswordWithToken(state, formData);
+    setState(result);
+  };
 
   useEffect(() => {
     if (state.status === 'invalid_token') {
@@ -76,7 +78,7 @@ function ResetPasswordForm() {
   return (
     <>
       {!isSuccessful ? (
-        <Form action={handleSubmit} className="flex flex-col gap-4 px-4 sm:px-16">
+        <form action={handleSubmit} className="flex flex-col gap-4 px-4 sm:px-16">
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="password"
@@ -127,7 +129,7 @@ function ResetPasswordForm() {
               Sign in
             </Link>
           </p>
-        </Form>
+        </form>
       ) : (
         <div className="flex flex-col gap-4 px-4 sm:px-16">
           <p className="text-center text-sm text-green-600 dark:text-green-400">

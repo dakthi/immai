@@ -1,4 +1,3 @@
-import Form from 'next/form';
 
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -17,7 +16,7 @@ export function AuthForm({
   isRegistration?: boolean;
 }) {
   return (
-    <Form action={action} className="flex flex-col gap-4 px-4 sm:px-16">
+    <form action={action} className="flex flex-col gap-4 px-4 sm:px-16">
       {isRegistration && (
         <div className="flex flex-col gap-2">
           <Label
@@ -79,6 +78,6 @@ export function AuthForm({
       </div>
 
       {children}
-    </Form>
+    </form>
   );
 }

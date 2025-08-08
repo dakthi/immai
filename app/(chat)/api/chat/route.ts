@@ -32,7 +32,6 @@ import {
   createResumableStreamContext,
   type ResumableStreamContext,
 } from 'resumable-stream';
-import { after } from 'next/server';
 import { ChatSDKError } from '@/lib/errors';
 import type { ChatMessage } from '@/lib/types';
 import type { ChatModel } from '@/lib/ai/models';
@@ -46,7 +45,10 @@ export function getStreamContext() {
   if (!globalStreamContext) {
     try {
       globalStreamContext = createResumableStreamContext({
-        waitUntil: after,
+        waitUntil: (promise: Promise<unknown>) => {
+          // Mock implementation for Next.js 14 compatibility
+          promise.catch(() => {});
+        },
       });
     } catch (error: any) {
       if (error.message.includes('REDIS_URL')) {

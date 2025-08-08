@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useActionState, useEffect, useState } from 'react';
-import Form from 'next/form';
+import { useEffect, useState } from 'react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,12 +14,15 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [isSuccessful, setIsSuccessful] = useState(false);
 
-  const [state, formAction] = useActionState<ForgotPasswordActionState, FormData>(
-    forgotPassword,
-    {
-      status: 'idle',
-    },
-  );
+  const [state, setState] = useState<ForgotPasswordActionState>({
+    status: 'idle',
+  });
+
+  const formAction = async (formData: FormData) => {
+    setState({ status: 'in_progress' });
+    const result = await forgotPassword(state, formData);
+    setState(result);
+  };
 
   useEffect(() => {
     if (state.status === 'user_not_found') {
@@ -57,7 +59,7 @@ export default function ForgotPasswordPage() {
         </div>
         
         {!isSuccessful ? (
-          <Form action={handleSubmit} className="flex flex-col gap-4 px-4 sm:px-16">
+          <form action={handleSubmit} className="flex flex-col gap-4 px-4 sm:px-16">
             <div className="flex flex-col gap-2">
               <Label
                 htmlFor="email"
@@ -90,7 +92,7 @@ export default function ForgotPasswordPage() {
                 Sign in
               </Link>
             </p>
-          </Form>
+          </form>
         ) : (
           <div className="flex flex-col gap-4 px-4 sm:px-16">
             <p className="text-center text-sm text-gray-600 dark:text-zinc-400">

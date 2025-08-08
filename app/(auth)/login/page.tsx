@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useActionState, useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { toast } from '@/components/toast';
 
 import { AuthForm } from '@/components/auth-form';
@@ -18,12 +18,15 @@ function LoginForm() {
   const [email, setEmail] = useState('');
   const [isSuccessful, setIsSuccessful] = useState(false);
 
-  const [state, formAction] = useActionState<LoginActionState, FormData>(
-    login,
-    {
-      status: 'idle',
-    },
-  );
+  const [state, setState] = useState<LoginActionState>({
+    status: 'idle',
+  });
+
+  const formAction = async (formData: FormData) => {
+    setState({ status: 'in_progress' });
+    const result = await login(state, formData);
+    setState(result);
+  };
 
   const { update: updateSession } = useSession();
 
