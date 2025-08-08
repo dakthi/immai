@@ -7,7 +7,6 @@ import Script from 'next/script';
 import { DataStreamProvider } from '@/components/data-stream-provider';
 
 export const dynamic = 'force-dynamic';
-export const experimental_ppr = true;
 
 export default async function Layout({
   children,
