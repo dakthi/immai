@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { Chat } from '@/components/chat';
 
 export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
 import { generateUUID } from '@/lib/utils';
 import { DataStreamHandler } from '@/components/data-stream-handler';

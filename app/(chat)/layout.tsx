@@ -6,7 +6,7 @@ import { auth } from '../(auth)/auth';
 import Script from 'next/script';
 import { DataStreamProvider } from '@/components/data-stream-provider';
 
-export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 
 export default async function Layout({
   children,
@@ -27,7 +27,7 @@ export default async function Layout({
           <AppSidebar user={session?.user} />
           <SidebarInset>{children}</SidebarInset>
         </SidebarProvider>
-      </DataStreamProvider>
+      </DataStreamProvider> 
     </>
   );
 }

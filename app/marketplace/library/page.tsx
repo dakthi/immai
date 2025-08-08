@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { LibraryDocumentCard } from './components/library-document-card';
 
 export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 
 async function getUserDocuments(userId: string) {
   return await db

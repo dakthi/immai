@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { DocumentActions } from './components/document-actions';
 
 export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 
 async function getDocument(id: string) {
   const result = await db

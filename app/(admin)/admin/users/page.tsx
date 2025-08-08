@@ -1,4 +1,3 @@
-'use client';
 
 import { auth } from '@/app/(auth)/auth';
 import { redirect } from 'next/navigation';
@@ -10,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { UpgradeUsersButton } from './components/upgrade-users-button';
 
 export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 
 async function getUsersWithPayments() {
   return await db
