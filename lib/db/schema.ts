@@ -206,6 +206,19 @@ export const cmsContent = pgTable('CMSContent', {
 
 export type CMSContent = InferSelectModel<typeof cmsContent>;
 
+export const systemPrompts = pgTable('SystemPrompts', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  slug: varchar('slug', { length: 255 }).notNull().unique(),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  category: varchar('category', { length: 100 }),
+  isActive: boolean('isActive').notNull().default(true),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+});
+
+export type SystemPrompt = InferSelectModel<typeof systemPrompts>;
+
 // New tables for document management and payment system
 export const documentLibrary = pgTable('DocumentLibrary', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),

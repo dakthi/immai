@@ -7,7 +7,7 @@ import {
   streamText,
 } from 'ai';
 import { auth, type UserType } from '@/app/(auth)/auth';
-import { type RequestHints, systemPrompt } from '@/lib/ai/prompts';
+import { type RequestHints, systemPrompt, getSystemPromptWithCustomization } from '@/lib/ai/prompts';
 import {
   createStreamId,
   deleteChatById,
@@ -157,8 +157,13 @@ export async function POST(request: Request) {
 
     const stream = createUIMessageStream({
       execute: async ({ writer: dataStream }) => {
-        // Process message with RAG
-        let enhancedSystemPrompt = systemPrompt({ selectedChatModel, requestHints });
+        // Get custom system prompt with RAG processing
+        let enhancedSystemPrompt = await getSystemPromptWithCustomization({
+          selectedChatModel,
+          requestHints,
+          userId: session.user.id
+        });
+        
         if (lastUserMessage) {
           const ragResult = await processMessageWithRAG(
             enhancedSystemPrompt, 

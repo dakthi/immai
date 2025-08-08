@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Settings, FileText, ArrowLeft, Home, Plus, Database, Sliders, Users } from 'lucide-react';
+import { Settings, FileText, ArrowLeft, Home, Plus, Database, Sliders, Users, Code } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -22,14 +22,19 @@ const adminMenuItems = [
     icon: Home,
   },
   {
-    title: "User Management",
-    href: "/admin/users",
-    icon: Users,
+    title: "System Prompts",
+    href: "/admin/system-prompts",
+    icon: Code,
   },
   {
     title: "Content Management",
     href: "/admin/cms",
     icon: FileText,
+  },
+  {
+    title: "User Management",
+    href: "/admin/users",
+    icon: Users,
   },
   {
     title: "Embeddings",
@@ -62,19 +67,25 @@ function AdminSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-          {adminMenuItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton 
-                asChild 
-                isActive={pathname === item.href}
-              >
-                <Link href={item.href}>
-                  <item.icon className="size-4" />
-                  {item.title}
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {adminMenuItems.map((item) => {
+            // Check if current path matches the menu item or is a subpage
+            const isActive = pathname === item.href || 
+                            (item.href !== "/admin" && pathname.startsWith(item.href));
+            
+            return (
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={isActive}
+                >
+                  <Link href={item.href}>
+                    <item.icon className="size-4" />
+                    {item.title}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
         
         <SidebarMenu className="mt-4">

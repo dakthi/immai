@@ -166,12 +166,21 @@ export function CMSForm({ initialData }: CMSFormProps) {
 
           <div>
             <Label htmlFor="content">Content</Label>
+            {formData.type === 'prompt' && (
+              <p className="text-sm text-muted-foreground mb-2">
+                This prompt will be used as the system prompt for the AI chat. Only one active prompt per user is used at a time.
+                Use variables like {'{user_message}'} for dynamic content.
+              </p>
+            )}
             <Textarea
               id="content"
               value={formData.content}
               onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              rows={10}
+              rows={formData.type === 'prompt' ? 15 : 10}
               required
+              placeholder={formData.type === 'prompt' 
+                ? 'You are a helpful AI assistant. Your role is to...' 
+                : 'Enter your content here...'}
             />
           </div>
 
