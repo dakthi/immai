@@ -13,11 +13,13 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
   useSidebar,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-import { Settings, BookOpen, Library } from 'lucide-react';
+import { Settings, BookOpen, MessageSquare, CreditCard } from 'lucide-react';
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
@@ -57,60 +59,56 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                 </TooltipTrigger>
                 <TooltipContent align="end">New Chat</TooltipContent>
               </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    type="button"
-                    className="p-2 h-fit"
-                    asChild
-                  >
-                    <Link href="/marketplace">
-                      <BookOpen className="size-4" />
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent align="end">Resources</TooltipContent>
-              </Tooltip>
-              {user && (
-                <>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        type="button"
-                        className="p-2 h-fit"
-                        asChild
-                      >
-                        <Link href="/marketplace/library">
-                          <Library className="size-4" />
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent align="end">My Library</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        type="button"
-                        className="p-2 h-fit"
-                        asChild
-                      >
-                        <Link href="/admin">
-                          <Settings className="size-4" />
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent align="end">Admin</TooltipContent>
-                  </Tooltip>
-                </>
+              {user && user.role === 'admin' && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      type="button"
+                      className="p-2 h-fit"
+                      asChild
+                    >
+                      <Link href="/admin">
+                        <Settings className="size-4" />
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent align="end">Admin</TooltipContent>
+                </Tooltip>
               )}
             </div>
           </div>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+        <SidebarMenu className="mb-6">
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild size="lg">
+              <Link href="/" onClick={() => setOpenMobile(false)}>
+                <MessageSquare className="size-5" />
+                <span className="text-base font-medium">Chatbot</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild size="lg">
+              <Link href="/marketplace/library" onClick={() => setOpenMobile(false)}>
+                <BookOpen className="size-5" />
+                <span className="text-base font-medium">Resources</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          {user && (
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild size="lg">
+                <Link href="/test-stripe" onClick={() => setOpenMobile(false)}>
+                  <CreditCard className="size-5" />
+                  <span className="text-base font-medium">Subscription Management</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+        </SidebarMenu>
         <SidebarHistory user={user} />
       </SidebarContent>
       <SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter>

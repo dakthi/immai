@@ -32,11 +32,6 @@ const adminMenuItems = [
     icon: FileText,
   },
   {
-    title: "Resources Management", 
-    href: "/marketplace",
-    icon: ShoppingCart,
-  },
-  {
     title: "User Management",
     href: "/admin/users",
     icon: Users,

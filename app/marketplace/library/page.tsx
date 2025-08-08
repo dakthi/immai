@@ -2,11 +2,13 @@ import { auth } from '@/app/(auth)/auth';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import { documentLibrary, userDocumentAccess } from '@/lib/db/schema';
-import { eq, desc } from 'drizzle-orm';
-import { Card } from '@/components/ui/card';
+import { eq, desc, count } from 'drizzle-orm';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { LibraryDocumentCard } from './components/library-document-card';
+import { BookOpen, Download, Star, TrendingUp, Search } from 'lucide-react';
 
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
@@ -23,6 +25,22 @@ async function getUserDocuments(userId: string) {
     .orderBy(desc(userDocumentAccess.grantedAt));
 }
 
+async function getLibraryStats(userId: string) {
+  const userDocs = await getUserDocuments(userId);
+  
+  const totalDocs = await db
+    .select({ count: count() })
+    .from(userDocumentAccess)
+    .where(eq(userDocumentAccess.userId, userId));
+
+  const recentDocs = userDocs.slice(0, 3);
+
+  return {
+    total: totalDocs[0]?.count || 0,
+    recent: recentDocs
+  };
+}
+
 export default async function LibraryPage() {
   const session = await auth();
 
@@ -31,8 +49,9 @@ export default async function LibraryPage() {
   }
 
   const userDocuments = await getUserDocuments(session.user.id);
+  const stats = await getLibraryStats(session.user.id);
 
-  const stats = {
+  const libraryStats = {
     total: userDocuments.length,
     purchased: userDocuments.filter(item => item.access.accessType === 'purchased').length,
     free: userDocuments.filter(item => item.access.accessType === 'free').length,
@@ -40,118 +59,80 @@ export default async function LibraryPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            My Resource Library
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+      <div className="max-w-none px-6 py-8">
+        
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-indigo-100 rounded-full px-4 py-2 mb-6">
+            <BookOpen className="size-5 text-indigo-600" />
+            <span className="text-sm font-medium text-indigo-800">Personal Library</span>
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Your Resource Library
           </h1>
-          <p className="text-gray-600">
-            Access all your downloaded and purchased resources
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Access all your downloaded and purchased resources in one organized place
           </p>
         </div>
-        <Link href="/marketplace">
-          <Badge variant="outline" className="cursor-pointer hover:bg-gray-100">
-            Browse Resources →
-          </Badge>
-        </Link>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="p-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
-            <div className="text-sm text-gray-600">Total Resources</div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-600">{stats.purchased}</div>
-            <div className="text-sm text-gray-600">Purchased</div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{stats.free}</div>
-            <div className="text-sm text-gray-600">Free</div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-orange-600">{stats.totalDownloads}</div>
-            <div className="text-sm text-gray-600">Downloads</div>
-          </div>
-        </Card>
-      </div>
 
-      {userDocuments.length === 0 ? (
-        <Card className="p-12 text-center">
-          <div className="text-gray-400 mb-4">
-            <svg className="size-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+
+
+        {/* Filter Section */}
+        <div className="mb-8">
+          <div className="bg-white rounded-lg border shadow-sm p-4">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Search className="size-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search your library..."
+                  className="border-0 outline-none bg-transparent text-gray-900 placeholder:text-gray-500 text-sm flex-1"
+                />
+              </div>
+              <select className="text-sm border border-gray-200 rounded px-3 py-1.5">
+                <option value="">All Types</option>
+                <option value="pdf">PDF</option>
+                <option value="word">Word</option>
+                <option value="excel">Excel</option>
+                <option value="powerpoint">PowerPoint</option>
+                <option value="image">Images</option>
+              </select>
+              <select className="text-sm border border-gray-200 rounded px-3 py-1.5">
+                <option value="">All Access</option>
+                <option value="free">Free</option>
+                <option value="purchased">Purchased</option>
+              </select>
+            </div>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No resources yet</h3>
-          <p className="text-gray-600 mb-6">
-            Start exploring our resource library to find useful content for your projects.
-          </p>
-          <Link href="/marketplace">
-            <Badge className="cursor-pointer px-4 py-2">
-              Explore Resources
-            </Badge>
-          </Link>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {userDocuments.map((item) => (
-            <LibraryDocumentCard
-              key={item.document.id}
-              document={item.document}
-              access={item.access}
-            />
-          ))}
         </div>
-      )}
 
-      {session.user.role === 'user' && (
-        <Card className="p-6 bg-blue-50 border-blue-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-blue-900 mb-2">
-                Unlock Premium Resources
-              </h3>
-              <p className="text-sm text-blue-700">
-                Upgrade to Pro to access exclusive premium content and advanced features.
-              </p>
+        {userDocuments.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-full p-8 size-32 mx-auto mb-6 flex items-center justify-center">
+              <BookOpen className="size-16 text-gray-400" />
             </div>
-            <Link href="/test-stripe">
-              <Badge className="cursor-pointer">
-                Upgrade to Pro
-              </Badge>
-            </Link>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No resources yet</h3>
+            <p className="text-gray-600 max-w-md mx-auto mb-6">
+              Your library is empty. Start exploring to add your first resources.
+            </p>
+            <Button asChild>
+              <Link href="/">Browse Available Resources</Link>
+            </Button>
           </div>
-        </Card>
-      )}
-
-      {session.user.role === 'paiduser' && (
-        <Card className="p-6 bg-green-50 border-green-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-green-900 mb-2">
-                ✅ You&apos;re a Pro Member!
-              </h3>
-              <p className="text-sm text-green-700">
-                You have access to all premium resources and exclusive content.
-              </p>
-            </div>
-            <Link href="/marketplace">
-              <Badge className="cursor-pointer bg-green-600">
-                Explore Premium
-              </Badge>
-            </Link>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {userDocuments.map((item) => (
+              <LibraryDocumentCard
+                key={item.document.id}
+                document={item.document}
+                access={item.access}
+              />
+            ))}
           </div>
-        </Card>
-      )}
+        )}
+      </div>
     </div>
   );
 }
