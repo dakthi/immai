@@ -2,7 +2,7 @@ import { getCMSContent } from '../actions';
 import { findSimilarContent } from '@/lib/ai/cms';
 import { auth } from '@/app/(auth)/auth';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function TestPage() {
   const session = await auth();

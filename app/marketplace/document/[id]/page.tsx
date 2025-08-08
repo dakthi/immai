@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { DocumentActions } from './components/document-actions';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 async function getDocument(id: string) {
   const result = await db

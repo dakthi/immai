@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { UpgradeUsersButton } from './components/upgrade-users-button';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 async function getUsersWithPayments() {
   return await db

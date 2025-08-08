@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { LibraryDocumentCard } from './components/library-document-card';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 async function getUserDocuments(userId: string) {
   return await db
