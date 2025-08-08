@@ -1,7 +1,8 @@
 import { db } from '@/lib/db';
 import { cmsContent } from '@/lib/db/schema';
 import { eq, and, sql, } from 'drizzle-orm';
-import { generateEmbedding, prepareTextForEmbedding, cosineSimilarity } from './embeddings';
+import { generateEmbedding, prepareTextForEmbedding, } from './embeddings';
+import { BM25Search } from './bm25';
 
 export async function getCMSPrompts(userId: string) {
   return await db
@@ -63,31 +64,25 @@ export async function findSimilarContent(
   limit = 5,
   threshold = 0.7
 ) {
-  console.log('🔍 [CMS] Starting similarity search');
+  console.log('🔍 [CMS] Starting BM25 search');
   console.log('👤 [CMS] User ID:', userId);
   console.log('💬 [CMS] Query:', query);
   console.log('📊 [CMS] Limit:', limit, 'Threshold:', threshold);
   
   try {
-    // Generate embedding for the query
-    console.log('🧠 [CMS] Generating query embedding...');
-    const queryEmbedding = await generateEmbedding(query);
-    console.log('✅ [CMS] Query embedding generated');
-    
-    // Get all content with embeddings
-    console.log('📚 [CMS] Fetching user content with embeddings from database...');
+    // Get all active content for the user
+    console.log('📚 [CMS] Fetching user content from database...');
     const allContent = await db
       .select()
       .from(cmsContent)
       .where(
         and(
           eq(cmsContent.userId, userId),
-          eq(cmsContent.isActive, true),
-          sql`${cmsContent.embedding} IS NOT NULL`
+          eq(cmsContent.isActive, true)
         )
       );
     
-    console.log('📊 [CMS] Found', allContent.length, 'documents with embeddings');
+    console.log('📊 [CMS] Found', allContent.length, 'documents');
     
     // Log all documents in knowledge base
     console.log('📚 [CMS] ===== KNOWLEDGE BASE DOCUMENTS =====');
@@ -96,37 +91,40 @@ export async function findSimilarContent(
     });
     console.log('📚 [CMS] ===== END KNOWLEDGE BASE =====');
 
-    // Calculate cosine similarity for each item
-    console.log('🧮 [CMS] Calculating similarities for all documents...');
-    const results = allContent
-      .map((item, index) => {
-        try {
-          console.log(`📐 [CMS] Processing document ${index + 1}/${allContent.length}: "${item.title}"`);
-          if (!item.embedding) {
-            console.error('❌ [CMS] Missing embedding for item:', item.id);
-            return null;
-          }
-          const itemEmbedding = JSON.parse(item.embedding);
-          const similarity = cosineSimilarity(queryEmbedding, itemEmbedding);
-          
-          const result = {
-            id: item.id,
-            title: item.title,
-            content: item.content,
-            type: item.type,
-            category: item.category,
-            tags: item.tags,
-            similarity,
-          };
-          
-          console.log(`✅ [CMS] Document "${item.title}" similarity: ${(similarity * 100).toFixed(1)}%`);
-          return result;
-        } catch (error) {
-          console.error('❌ [CMS] Error parsing embedding for item:', item.id, error);
-          return null;
-        }
-      })
-      .filter((result): result is NonNullable<typeof result> => result !== null)
+    if (allContent.length === 0) {
+      console.log('❌ [CMS] No content found for user');
+      return [];
+    }
+
+    // Create BM25 search instance and add documents
+    console.log('🔧 [CMS] Creating BM25 search index...');
+    const bm25Search = new BM25Search();
+    bm25Search.addDocuments(allContent.map(doc => ({
+      id: doc.id,
+      title: doc.title,
+      content: doc.content,
+      type: doc.type,
+      category: doc.category,
+      tags: doc.tags
+    })));
+
+    // Perform BM25 search
+    console.log('🔍 [CMS] Performing BM25 search...');
+    const bm25Results = bm25Search.search(query, limit * 2); // Get more results to filter
+
+    // Convert BM25 scores to similarity-like scores (0-1 range)
+    // BM25 scores are unbounded, so we normalize them
+    const maxScore = bm25Results.length > 0 ? bm25Results[0].score : 1;
+    const results = bm25Results
+      .map(result => ({
+        id: result.id,
+        title: result.title,
+        content: result.content,
+        type: result.type,
+        category: result.category,
+        tags: result.tags,
+        similarity: maxScore > 0 ? result.score / maxScore : 0, // Normalize to 0-1
+      }))
       .filter(result => {
         const passes = result.similarity >= threshold;
         if (!passes) {
@@ -134,7 +132,6 @@ export async function findSimilarContent(
         }
         return passes;
       })
-      .sort((a, b) => b.similarity - a.similarity)
       .slice(0, limit);
 
     console.log('🎯 [CMS] Final results after filtering and sorting:');
@@ -142,7 +139,7 @@ export async function findSimilarContent(
       console.log(`  ${index + 1}. "${result.title}" (${result.type}) - ${(result.similarity * 100).toFixed(1)}%`);
     });
 
-    console.log('✅ [CMS] Similarity search completed, returning', results.length, 'results');
+    console.log('✅ [CMS] BM25 search completed, returning', results.length, 'results');
     return results;
   } catch (error) {
     console.error('❌ [CMS] Error finding similar content:', error);

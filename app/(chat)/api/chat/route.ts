@@ -126,12 +126,6 @@ export async function POST(request: Request) {
     const messagesFromDb = await getMessagesByChatId({ id });
     const uiMessages = [...convertToUIMessages(messagesFromDb), message];
 
-    console.log('💬 [CHAT] ===== NEW MESSAGE RECEIVED =====');
-    console.log('💬 [CHAT] Chat ID:', id);
-    console.log('💬 [CHAT] User ID:', session.user.id);
-    console.log('💬 [CHAT] Model:', selectedChatModel);
-    console.log('💬 [CHAT] Message content:', JSON.stringify(message.parts, null, 2));
-    console.log('💬 [CHAT] Total messages in conversation:', uiMessages.length);
 
     const { longitude, latitude, city, country } = geolocation(request);
 
@@ -158,40 +152,28 @@ export async function POST(request: Request) {
     const streamId = generateUUID();
     await createStreamId({ streamId, chatId: id });
 
-    console.log('🚀 [CHAT] Starting AI response generation...');
-
     // Get the last user message for RAG processing
     const lastUserMessage = message.parts.find(part => part.type === 'text')?.text || '';
-    console.log('📝 [CHAT] Processing message with RAG:', lastUserMessage);
 
     const stream = createUIMessageStream({
       execute: async ({ writer: dataStream }) => {
-        console.log('🤖 [CHAT] Calling AI model with streamText...');
-        
         // Process message with RAG
         let enhancedSystemPrompt = systemPrompt({ selectedChatModel, requestHints });
         if (lastUserMessage) {
-          console.log('🔍 [CHAT] Processing message with RAG...');
           const ragResult = await processMessageWithRAG(
             enhancedSystemPrompt, 
             lastUserMessage, 
             session.user.id
           );
           enhancedSystemPrompt = ragResult.prompt;
-          console.log('✅ [CHAT] RAG processing completed');
-          console.log('📏 [CHAT] Final system prompt length:', enhancedSystemPrompt.length, 'characters');
         }
         
-        // console.log('🔗 [CHAT] ===== FINAL SYSTEM PROMPT TO AI =====');
-        // console.log(enhancedSystemPrompt);
-        // console.log('🔗 [CHAT] ===== END SYSTEM PROMPT =====');
-        
-        console.log('📝 [CHAT] ===== MESSAGES SENT TO AI =====');
         const convertedMessages = convertToModelMessages(uiMessages);
-        convertedMessages.forEach((msg, index) => {
-          console.log(`💬 [CHAT] Message ${index + 1} (${msg.role}):`, `${JSON.stringify(msg.content).substring(0, 200)}...`);
-        });
-        console.log('📝 [CHAT] ===== END MESSAGES =====');
+        
+        console.log('🔗 [CHAT] ===== COMPLETE API REQUEST =====');
+        console.log('System Prompt:', enhancedSystemPrompt);
+        console.log('Messages:', JSON.stringify(convertedMessages, null, 2));
+        console.log('🔗 [CHAT] ===== END API REQUEST =====');
 
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
@@ -235,8 +217,9 @@ export async function POST(request: Request) {
       },
       generateId: generateUUID,
       onFinish: async ({ messages }) => {
-        console.log('✅ [CHAT] AI response completed');
-        console.log('💾 [CHAT] Saving', messages.length, 'messages to database');
+        console.log('📥 [CHAT] ===== API RESPONSE =====');
+        console.log('Messages:', JSON.stringify(messages, null, 2));
+        console.log('📥 [CHAT] ===== END API RESPONSE =====');
         
         await saveMessages({
           messages: messages.map((message) => ({
@@ -248,8 +231,6 @@ export async function POST(request: Request) {
             chatId: id,
           })),
         });
-        
-        console.log('✅ [CHAT] Messages saved successfully');
       },
       onError: (error) => {
         console.error('❌ [CHAT] Error during streaming:', error);

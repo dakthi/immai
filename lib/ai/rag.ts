@@ -457,8 +457,8 @@ export async function processMessageWithRAG(
       console.log(`📄 [RAG-PROCESS] Source ${index + 1}: "${source.title}" (${(source.similarity * 100).toFixed(1)}% similarity)`);
     });
     
-    // Uncomment to see full context:
-    // console.log('📄 [RAG-PROCESS] Raw Context:', ragContext.context);
+    // Full context logging:
+    console.log('📄 [RAG-PROCESS] Raw Context:', ragContext.context);
   }
   
   // Build enhanced prompt with context
