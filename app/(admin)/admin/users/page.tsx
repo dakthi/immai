@@ -1,3 +1,5 @@
+'use client';
+
 import { auth } from '@/app/(auth)/auth';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
