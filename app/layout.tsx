@@ -6,6 +6,8 @@ import { ThemeProvider } from '@/components/theme-provider';
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://immai.ca'),
   title: 'IMM AI - Trợ lý định cư Canada',
