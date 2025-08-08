@@ -6,7 +6,7 @@ import { db } from '@/lib/db';
 import { documentLibrary, userDocumentAccess, payment, downloadHistory } from '@/lib/db/schema';
 import { desc, count, sum, sql } from 'drizzle-orm';
 
-async function getMarketplaceStats() {
+async function getResourceStats() {
   const documents = await db.select().from(documentLibrary);
   
   let totalDownloads = 0;
@@ -44,7 +44,7 @@ async function getMarketplaceStats() {
 }
 
 export default async function AdminDashboard() {
-  const marketplaceStats = await getMarketplaceStats();
+  const resourceStats = await getResourceStats();
 
   return (
     <div>
@@ -54,7 +54,7 @@ export default async function AdminDashboard() {
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
           <ShoppingCart className="size-6" />
-          Marketplace Overview
+          Resource Library Overview
         </h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
@@ -62,12 +62,12 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Documents</p>
-                  <p className="text-2xl font-bold text-blue-600">{marketplaceStats.totalDocuments}</p>
+                  <p className="text-2xl font-bold text-blue-600">{resourceStats.totalDocuments}</p>
                 </div>
                 <FileText className="size-8 text-blue-600" />
               </div>
               <div className="mt-2 text-xs text-gray-500">
-                {marketplaceStats.freeDocuments} free • {marketplaceStats.paidDocuments} paid
+                {resourceStats.freeDocuments} free • {resourceStats.paidDocuments} paid
               </div>
             </CardContent>
           </Card>
@@ -77,7 +77,7 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Downloads</p>
-                  <p className="text-2xl font-bold text-green-600">{marketplaceStats.totalDownloads}</p>
+                  <p className="text-2xl font-bold text-green-600">{resourceStats.totalDownloads}</p>
                 </div>
                 <Download className="size-8 text-green-600" />
               </div>
@@ -89,7 +89,7 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                  <p className="text-2xl font-bold text-yellow-600">${marketplaceStats.totalRevenue.toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-yellow-600">${resourceStats.totalRevenue.toFixed(2)}</p>
                 </div>
                 <DollarSign className="size-8 text-yellow-600" />
               </div>
@@ -102,8 +102,8 @@ export default async function AdminDashboard() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Avg. Downloads</p>
                   <p className="text-2xl font-bold text-purple-600">
-                    {marketplaceStats.totalDocuments > 0 
-                      ? Math.round(marketplaceStats.totalDownloads / marketplaceStats.totalDocuments) 
+                    {resourceStats.totalDocuments > 0 
+                      ? Math.round(resourceStats.totalDownloads / resourceStats.totalDocuments) 
                       : 0}
                   </p>
                 </div>
@@ -179,7 +179,7 @@ export default async function AdminDashboard() {
       {/* Recent Marketplace Documents */}
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Recent Marketplace Documents</h2>
+          <h2 className="text-2xl font-bold">Recent Resource Library Documents</h2>
           <div className="flex gap-2">
             <Button asChild>
               <Link href="/marketplace/upload">
@@ -189,25 +189,25 @@ export default async function AdminDashboard() {
             </Button>
             <Button variant="outline" asChild>
               <Link href="/marketplace">
-                View Marketplace
+                View Resources
               </Link>
             </Button>
           </div>
         </div>
         
         <div className="grid gap-4">
-          {marketplaceStats.recentDocuments.length === 0 ? (
+          {resourceStats.recentDocuments.length === 0 ? (
             <Card>
               <CardContent className="p-6 text-center">
                 <ShoppingCart className="size-12 mx-auto mb-4 text-gray-400" />
-                <p className="text-muted-foreground mb-4">No documents in marketplace yet</p>
+                <p className="text-muted-foreground mb-4">No documents in resource library yet</p>
                 <Button asChild>
                   <Link href="/marketplace/upload">Upload First Document</Link>
                 </Button>
               </CardContent>
             </Card>
           ) : (
-            marketplaceStats.recentDocuments.map((document) => (
+            resourceStats.recentDocuments.map((document) => (
               <Card key={document.id}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
@@ -263,11 +263,11 @@ export default async function AdminDashboard() {
           )}
         </div>
         
-        {marketplaceStats.recentDocuments.length > 0 && (
+        {resourceStats.recentDocuments.length > 0 && (
           <div className="text-center mt-4">
             <Button variant="outline" asChild>
               <Link href="/marketplace">
-                View All Documents ({marketplaceStats.totalDocuments})
+                View All Documents ({resourceStats.totalDocuments})
               </Link>
             </Button>
           </div>

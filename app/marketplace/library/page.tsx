@@ -44,15 +44,15 @@ export default async function LibraryPage() {
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            My Document Library
+            My Resource Library
           </h1>
           <p className="text-gray-600">
-            Access all your purchased and free documents
+            Access all your downloaded and purchased resources
           </p>
         </div>
         <Link href="/marketplace">
           <Badge variant="outline" className="cursor-pointer hover:bg-gray-100">
-            Browse Marketplace →
+            Browse Resources →
           </Badge>
         </Link>
       </div>
@@ -61,7 +61,7 @@ export default async function LibraryPage() {
         <Card className="p-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
-            <div className="text-sm text-gray-600">Total Documents</div>
+            <div className="text-sm text-gray-600">Total Resources</div>
           </div>
         </Card>
         <Card className="p-4">
@@ -91,13 +91,13 @@ export default async function LibraryPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No documents yet</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No resources yet</h3>
           <p className="text-gray-600 mb-6">
-            Start exploring the marketplace to find useful documents for your projects.
+            Start exploring our resource library to find useful content for your projects.
           </p>
           <Link href="/marketplace">
             <Badge className="cursor-pointer px-4 py-2">
-              Explore Marketplace
+              Explore Resources
             </Badge>
           </Link>
         </Card>
@@ -118,10 +118,10 @@ export default async function LibraryPage() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-blue-900 mb-2">
-                Want to upload your own documents?
+                Unlock Premium Resources
               </h3>
               <p className="text-sm text-blue-700">
-                Upgrade to Pro to share your documents with the community and earn from downloads.
+                Upgrade to Pro to access exclusive premium content and advanced features.
               </p>
             </div>
             <Link href="/test-stripe">
@@ -138,15 +138,15 @@ export default async function LibraryPage() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-green-900 mb-2">
-                ✅ You&apos;re a Paid User!
+                ✅ You&apos;re a Pro Member!
               </h3>
               <p className="text-sm text-green-700">
-                You can now upload documents and access premium features.
+                You have access to all premium resources and exclusive content.
               </p>
             </div>
-            <Link href="/marketplace/upload">
+            <Link href="/marketplace">
               <Badge className="cursor-pointer bg-green-600">
-                Upload Document
+                Explore Premium
               </Badge>
             </Link>
           </div>

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Eye, Download, ExternalLink } from 'lucide-react';
+import Image from 'next/image';
 import type { DocumentLibrary } from '@/lib/db/schema';
 
 interface DocumentPreviewProps {
@@ -39,9 +40,11 @@ export function DocumentPreview({ document, hasAccess }: DocumentPreviewProps) {
     if (fileType.includes('image') && hasAccess && !imageError) {
       return (
         <div className="w-full max-h-96 overflow-hidden flex justify-center">
-          <img
+          <Image
             src={document.filePath}
             alt={document.title}
+            width={800}
+            height={400}
             className="max-w-full max-h-96 object-contain rounded-lg"
             onError={() => setImageError(true)}
           />

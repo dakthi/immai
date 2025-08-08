@@ -32,7 +32,7 @@ const adminMenuItems = [
     icon: FileText,
   },
   {
-    title: "Marketplace Management",
+    title: "Resources Management", 
     href: "/marketplace",
     icon: ShoppingCart,
   },

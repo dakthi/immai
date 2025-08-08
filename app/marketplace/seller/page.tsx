@@ -234,8 +234,8 @@ export default async function SellerDashboard() {
               </div>
             ) : (
               <div className="space-y-3 max-h-96 overflow-y-auto">
-                {marketplaceData.recentActivity.map((activity, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                {marketplaceData.recentActivity.map((activity) => (
+                  <div key={`${activity.documentId}-${activity.downloadDate}`} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div>
                       <p className="font-medium text-sm">{activity.documentTitle}</p>
                       <p className="text-xs text-gray-500">

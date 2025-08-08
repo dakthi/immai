@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-import { Settings, Store, Library } from 'lucide-react';
+import { Settings, BookOpen, Library } from 'lucide-react';
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
@@ -66,11 +66,11 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                     asChild
                   >
                     <Link href="/marketplace">
-                      <Store className="size-4" />
+                      <BookOpen className="size-4" />
                     </Link>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent align="end">Marketplace</TooltipContent>
+                <TooltipContent align="end">Resources</TooltipContent>
               </Tooltip>
               {user && (
                 <>
