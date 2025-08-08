@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import type { DocumentLibrary } from '@/lib/db/schema';
 import type { Session } from 'next-auth';
 import Link from 'next/link';
+import { DocumentPreview } from './document-preview';
 
 interface DocumentCardProps {
   document: DocumentLibrary;
@@ -150,9 +151,7 @@ export function DocumentCard({ document, hasAccess, currentUser }: DocumentCardP
               >
                 {isLoading ? 'Downloading...' : 'Download'}
               </Button>
-              <Link href={`/marketplace/document/${document.id}`}>
-                <Button size="sm" variant="outline">View</Button>
-              </Link>
+              <DocumentPreview document={document} hasAccess={hasAccess} />
             </>
           ) : (
             <>
@@ -164,9 +163,7 @@ export function DocumentCard({ document, hasAccess, currentUser }: DocumentCardP
               >
                 {isLoading ? 'Processing...' : document.isFree ? 'Get Free' : 'Purchase'}
               </Button>
-              <Link href={`/marketplace/document/${document.id}`}>
-                <Button size="sm" variant="outline">Preview</Button>
-              </Link>
+              <DocumentPreview document={document} hasAccess={hasAccess} />
             </>
           )}
         </div>

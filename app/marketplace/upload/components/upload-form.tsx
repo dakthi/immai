@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Upload, X, FileText, CheckCircle } from 'lucide-react';
 
 interface UploadFormProps {
   userId: string;
@@ -24,6 +25,8 @@ export function UploadForm({ userId }: UploadFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [uploadError, setUploadError] = useState<string>('');
   const [formData, setFormData] = useState({
     title: '',
     description: '',

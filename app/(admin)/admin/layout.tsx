@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Settings, FileText, ArrowLeft, Home, Plus, Database, Sliders, Users, Code } from 'lucide-react';
+import { Settings, FileText, ArrowLeft, Home, Plus, Database, Sliders, Users, Code, ShoppingCart } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -30,6 +30,11 @@ const adminMenuItems = [
     title: "Content Management",
     href: "/admin/cms",
     icon: FileText,
+  },
+  {
+    title: "Marketplace Management",
+    href: "/marketplace",
+    icon: ShoppingCart,
   },
   {
     title: "User Management",
